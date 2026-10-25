@@ -1701,7 +1701,7 @@ header > .container > .pull-right > * {
 
 /* fix Main Login*/
 .login {
-	background: #fff url(./loginBG.png) no-repeat center center / cover;
+	background: #090e17 url(./FeelGoodLoginScreen.jpeg) no-repeat center center / cover fixed;
 }
 
 .login > .main > .main-left {
@@ -2079,7 +2079,7 @@ body.lang_pl.login .cbi-value-title {
 
 @media screen and (max-width: 992px) {
     .login {
-        background: #354057;
+        background: #090e17 url(./FeelGoodLoginScreen.jpeg) no-repeat center center / cover fixed !important;
     }
     
     .logged-in .main-left {
@@ -3078,8 +3078,19 @@ html[data-theme-color="dark"] .cbi-modal,
 
 /* Login Page Dark Styling */
 html[data-theme-color="dark"] .login,
-:root .login {
-    background: var(--bg-canvas) url(./loginBG.png) no-repeat center center / cover !important;
+:root .login,
+.login {
+    background: #090e17 url(./FeelGoodLoginScreen.jpeg) no-repeat center center / cover fixed !important;
+}
+
+.login > .main .container {
+    background: rgba(15, 23, 42, 0.78) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 2.25rem 2.5rem !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65) !important;
 }
 html[data-theme-color="dark"] .login .main-right h2,
 :root .login .main-right h2 {
