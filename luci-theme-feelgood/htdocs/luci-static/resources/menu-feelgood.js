@@ -75,6 +75,366 @@ const SlideAnimations = {
 };
 
 /**
+ * System & Kernel Log Viewer
+ * Transforms plain LuCI <textarea id="syslog"> into an interactive,
+ * severity-colored log viewer for both System Log and Kernel Log.
+ */
+const LogViewer = {
+	currentFilter: 'all',
+	isWrapped: false,
+
+	escapeHtml(str) {
+		if (!str) return '';
+		return String(str)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	},
+
+	parseLine(line, idx, state) {
+		if (!line || !line.trim()) return null;
+
+		let time = '';
+		let facility = '';
+		let severity = 'info';
+		let process = '';
+		let msg = '';
+
+		// 1. Standard syslog: Sun Oct 25 22:09:33 2026 kern.err kernel: [ 0.760192] ...
+		let m = line.match(/^(\w{3}\s+\w{3}\s+\d+\s+[\d:]+\s+\d{4})\s+([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)\s+([^:]+):\s*(.*)$/);
+		if (m) {
+			time = m[1];
+			facility = m[2];
+			severity = m[3];
+			process = m[4];
+			msg = m[5];
+		} else {
+			// 2. Syslog without process colon: Sun Oct 25 22:09:33 2026 kern.err msg
+			m = line.match(/^(\w{3}\s+\w{3}\s+\d+\s+[\d:]+\s+\d{4})\s+([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)\s+(.*)$/);
+			if (m) {
+				time = m[1];
+				facility = m[2];
+				severity = m[3];
+				msg = m[4];
+			} else {
+				// 3. Intl format: [Oct 25, 2026, 10:09:33 PM GMT+5:45] daemon.info: msg
+				m = line.match(/^\[(.*?)\]\s+([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+):\s*(.*)$/);
+				if (m) {
+					time = m[1];
+					facility = m[2];
+					severity = m[3];
+					msg = m[4];
+				} else {
+					// 4. Kernel dmesg format: [ 0.760192] msg
+					m = line.match(/^\[\s*(\d+(?:\.\d+)?)\]\s*(.*)$/);
+					if (m) {
+						time = '[' + parseFloat(m[1]).toFixed(6) + ']';
+						facility = 'kern';
+						process = 'kernel';
+						msg = m[2];
+						if (/\b(?:fail|failed|error|fault|denied|corrupt|timed?out|abort|panic|oops|bug)\b/i.test(msg)) {
+							severity = 'err';
+						} else if (/\b(?:warn|warning|overclocked?|taints?|conflict|dropped|retry)\b/i.test(msg)) {
+							severity = 'warn';
+						} else if (/\b(?:notice|ready|detected|registered|clean|initialized)\b/i.test(msg)) {
+							severity = 'notice';
+						} else {
+							severity = 'info';
+						}
+					} else {
+						// 5. Continuation / multiline trace
+						facility = state.lastFacility || 'sys';
+						severity = state.lastSeverity || 'info';
+						msg = line;
+					}
+				}
+			}
+		}
+
+		// Normalize severity state
+		const s = severity.toLowerCase();
+		let norm = 'info';
+		if (s.startsWith('emerg') || s === 'panic' || s.startsWith('alert') || s.startsWith('crit')) {
+			norm = 'crit';
+		} else if (s.startsWith('err')) {
+			norm = 'err';
+		} else if (s.startsWith('warn')) {
+			norm = 'warn';
+		} else if (s === 'notice') {
+			norm = 'notice';
+		} else if (s === 'debug') {
+			norm = 'debug';
+		}
+
+		state.lastFacility = facility;
+		state.lastSeverity = norm;
+
+		return {
+			idx: idx + 1,
+			time,
+			facility,
+			severity: norm,
+			rawSev: severity,
+			process,
+			msg
+		};
+	},
+
+	process() {
+		const syslog = document.getElementById('syslog');
+		if (!syslog) return;
+
+		// Hide the raw plain-text textarea
+		if (!syslog.classList.contains('feelgood-hidden-log')) {
+			syslog.classList.add('feelgood-hidden-log');
+		}
+
+		let viewer = document.getElementById('feelgood-log-viewer');
+		if (!viewer) {
+			viewer = this.createViewer(syslog);
+		}
+
+		this.hookTextarea(syslog, viewer);
+
+		const currentVal = syslog.value || '';
+		if (viewer.dataset.lastLogValue !== currentVal) {
+			this.render(viewer, currentVal);
+		}
+	},
+
+	hookTextarea(syslog, viewer) {
+		if (syslog._feelgoodHooked) return;
+		syslog._feelgoodHooked = true;
+
+		const self = this;
+		const originalDesc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+		if (originalDesc && originalDesc.set) {
+			Object.defineProperty(syslog, 'value', {
+				get() {
+					return originalDesc.get.call(this);
+				},
+				set(v) {
+					originalDesc.set.call(this, v);
+					self.render(viewer, v);
+				},
+				configurable: true
+			});
+		}
+	},
+
+	createViewer(syslog) {
+		const viewer = document.createElement('div');
+		viewer.id = 'feelgood-log-viewer';
+		viewer.className = 'feelgood-log-viewer';
+
+		syslog.parentNode.insertBefore(viewer, syslog.nextSibling);
+
+		// Synchronize LuCI scroll buttons
+		const scrollDownBtn = document.getElementById('scrollDownButton');
+		const scrollUpBtn = document.getElementById('scrollUpButton');
+
+		if (scrollDownBtn && !scrollDownBtn._feelgoodHooked) {
+			scrollDownBtn._feelgoodHooked = true;
+			scrollDownBtn.addEventListener('click', () => {
+				const body = viewer.querySelector('.feelgood-log-body');
+				if (body) body.scrollTop = body.scrollHeight;
+			});
+		}
+		if (scrollUpBtn && !scrollUpBtn._feelgoodHooked) {
+			scrollUpBtn._feelgoodHooked = true;
+			scrollUpBtn.addEventListener('click', () => {
+				const body = viewer.querySelector('.feelgood-log-body');
+				if (body) body.scrollTop = 0;
+			});
+		}
+
+		return viewer;
+	},
+
+	render(viewer, rawText) {
+		viewer.dataset.lastLogValue = rawText;
+
+		const lines = (rawText || '').split(/\r?\n/);
+		const rowsHtml = [];
+		const state = { lastFacility: '', lastSeverity: 'info' };
+		const counts = { total: 0, crit: 0, err: 0, warn: 0, notice: 0, info: 0, debug: 0 };
+
+		for (let i = 0; i < lines.length; i++) {
+			const entry = this.parseLine(lines[i], i, state);
+			if (!entry) continue;
+
+			counts.total++;
+			if (counts[entry.severity] !== undefined) counts[entry.severity]++;
+
+			rowsHtml.push(
+				`<div class="feelgood-log-row log-sev-${entry.severity}" data-severity="${entry.severity}">` +
+					`<span class="log-num">${entry.idx}</span>` +
+					(entry.time ? `<span class="log-time">${this.escapeHtml(entry.time)}</span>` : '') +
+					`<span class="log-badge log-badge-${entry.severity}">` +
+						(entry.facility ? `<span class="log-badge-fac">${this.escapeHtml(entry.facility)}</span><span class="log-badge-sep">.</span>` : '') +
+						`<span class="log-badge-sev">${this.escapeHtml(entry.rawSev.toUpperCase())}</span>` +
+					`</span>` +
+					(entry.process ? `<span class="log-proc">${this.escapeHtml(entry.process)}</span>` : '') +
+					`<span class="log-msg">${this.escapeHtml(entry.msg)}</span>` +
+				`</div>`
+			);
+		}
+
+		const filterSev = viewer.getAttribute('data-filter-severity') || this.currentFilter;
+		const isWrap = viewer.classList.contains('log-wrap') || this.isWrapped;
+
+		// Build toolbar
+		let toolbarHtml =
+			`<div class="feelgood-log-toolbar">` +
+				`<div class="feelgood-log-filters">` +
+					`<button type="button" class="feelgood-log-filter-btn ${filterSev === 'all' ? 'active' : ''}" data-sev="all">` +
+						`All <span class="pill-cnt">${counts.total}</span>` +
+					`</button>` +
+					(counts.crit > 0
+						? `<button type="button" class="feelgood-log-filter-btn ${filterSev === 'crit' ? 'active' : ''}" data-sev="crit">` +
+								`🔴 Critical <span class="pill-cnt">${counts.crit}</span>` +
+						  `</button>`
+						: '') +
+					(counts.err > 0
+						? `<button type="button" class="feelgood-log-filter-btn ${filterSev === 'err' ? 'active' : ''}" data-sev="err">` +
+								`❌ Errors <span class="pill-cnt">${counts.err}</span>` +
+						  `</button>`
+						: '') +
+					(counts.warn > 0
+						? `<button type="button" class="feelgood-log-filter-btn ${filterSev === 'warn' ? 'active' : ''}" data-sev="warn">` +
+								`⚠️ Warnings <span class="pill-cnt">${counts.warn}</span>` +
+						  `</button>`
+						: '') +
+					(counts.notice > 0
+						? `<button type="button" class="feelgood-log-filter-btn ${filterSev === 'notice' ? 'active' : ''}" data-sev="notice">` +
+								`ℹ️ Notices <span class="pill-cnt">${counts.notice}</span>` +
+						  `</button>`
+						: '') +
+					`<button type="button" class="feelgood-log-filter-btn ${filterSev === 'info' ? 'active' : ''}" data-sev="info">` +
+						`Info <span class="pill-cnt">${counts.info}</span>` +
+					`</button>` +
+				`</div>` +
+				`<div class="feelgood-log-actions">` +
+					`<button type="button" class="feelgood-log-action-btn log-btn-wrap ${isWrap ? 'active' : ''}" title="Toggle Word Wrap">` +
+						`Wrap` +
+					`</button>` +
+					`<button type="button" class="feelgood-log-action-btn log-btn-copy" title="Copy Raw Logs to Clipboard">` +
+						`📋 Copy` +
+					`</button>` +
+					`<button type="button" class="feelgood-log-action-btn log-btn-tail" title="Scroll to bottom">` +
+						`⬇ Tail` +
+					`</button>` +
+					`<button type="button" class="feelgood-log-action-btn log-btn-head" title="Scroll to top">` +
+						`⬆ Head` +
+					`</button>` +
+				`</div>` +
+			`</div>`;
+
+		const bodyHtml = rowsHtml.length > 0
+			? `<div class="feelgood-log-body">${rowsHtml.join('')}</div>`
+			: `<div class="feelgood-log-body"><div class="feelgood-log-empty">No log entries matching the selected filter.</div></div>`;
+
+		viewer.innerHTML = toolbarHtml + bodyHtml;
+
+		if (filterSev && filterSev !== 'all') {
+			viewer.setAttribute('data-filter-severity', filterSev);
+		} else {
+			viewer.removeAttribute('data-filter-severity');
+		}
+
+		if (isWrap) {
+			viewer.classList.add('log-wrap');
+		} else {
+			viewer.classList.remove('log-wrap');
+		}
+
+		// Attach toolbar listeners
+		const filterBtns = viewer.querySelectorAll('.feelgood-log-filter-btn');
+		filterBtns.forEach(btn => {
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				const sev = btn.getAttribute('data-sev');
+				this.currentFilter = sev;
+				filterBtns.forEach(b => b.classList.remove('active'));
+				btn.classList.add('active');
+
+				if (sev === 'all') {
+					viewer.removeAttribute('data-filter-severity');
+				} else {
+					viewer.setAttribute('data-filter-severity', sev);
+				}
+			});
+		});
+
+		const wrapBtn = viewer.querySelector('.log-btn-wrap');
+		if (wrapBtn) {
+			wrapBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				viewer.classList.toggle('log-wrap');
+				this.isWrapped = viewer.classList.contains('log-wrap');
+				wrapBtn.classList.toggle('active', this.isWrapped);
+			});
+		}
+
+		const copyBtn = viewer.querySelector('.log-btn-copy');
+		if (copyBtn) {
+			copyBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				const textToCopy = rawText || '';
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(textToCopy).then(() => {
+						copyBtn.textContent = '✓ Copied!';
+						setTimeout(() => { copyBtn.innerHTML = '📋 Copy'; }, 2000);
+					}).catch(() => {
+						this.fallbackCopy(textToCopy, copyBtn);
+					});
+				} else {
+					this.fallbackCopy(textToCopy, copyBtn);
+				}
+			});
+		}
+
+		const tailBtn = viewer.querySelector('.log-btn-tail');
+		if (tailBtn) {
+			tailBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				const body = viewer.querySelector('.feelgood-log-body');
+				if (body) body.scrollTop = body.scrollHeight;
+			});
+		}
+
+		const headBtn = viewer.querySelector('.log-btn-head');
+		if (headBtn) {
+			headBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				const body = viewer.querySelector('.feelgood-log-body');
+				if (body) body.scrollTop = 0;
+			});
+		}
+	},
+
+	fallbackCopy(text, btn) {
+		const ta = document.createElement('textarea');
+		ta.value = text;
+		ta.style.position = 'fixed';
+		ta.style.opacity = '0';
+		document.body.appendChild(ta);
+		ta.select();
+		try {
+			document.execCommand('copy');
+			btn.textContent = '✓ Copied!';
+			setTimeout(() => { btn.innerHTML = '📋 Copy'; }, 2000);
+		} catch (err) {
+			btn.textContent = 'Failed';
+			setTimeout(() => { btn.innerHTML = '📋 Copy'; }, 2000);
+		}
+		document.body.removeChild(ta);
+	}
+};
+
+/**
  * Smart Colorizer Engine
  * Enriches LuCI telemetry with contextual semantic tags for:
  * - Signal quality & WiFi connectivity
@@ -111,6 +471,7 @@ const Colorizer = {
 		try {
 			this.colorizeProgressBars();
 			this.colorizeElements();
+			LogViewer.process();
 		} catch (err) {
 			console.warn('Feelgood Colorizer error:', err);
 		} finally {

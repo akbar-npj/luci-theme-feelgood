@@ -106,6 +106,18 @@ Hardware thermal telemetry is automatically retrieved via standard Linux `sysfs`
 
 ---
 
+### 📋 System & Kernel Log Severity Classification
+| Severity State | Level | Dark Theme Badge & Indicator | Visual Semantics |
+| :--- | :---: | :--- | :--- |
+| **Emergency / Alert / Critical** (`emerg`, `alert`, `crit`) | 0, 1, 2 | Bright Crimson (`#ffe4e6` on `#f43f5e35`), 3.5px rose border | System failure, panic, immediate action required |
+| **Error** (`err`, `error`) | 3 | Coral Red (`#fca5a5` on `#ef444425`), 3.5px red border | Failed operation, denied, connection/socket error |
+| **Warning** (`warn`, `warning`) | 4 | Warm Amber (`#fde68a` on `#f59e0b25`), 3.5px amber border | Non-fatal error, retry, overclock, timeout, taints |
+| **Notice** (`notice`) | 5 | Sky Cyan (`#bae6fd` on `#0ea5e920`), 3.5px cyan border | State change, interface UP, daemon/auth success |
+| **Info** (`info`) | 6 | Soft Slate (`#cbd5e1` on `#64748b20`), transparent border | Routine service status, boot output, standard operation |
+| **Debug** (`debug`) | 7 | Muted Steel (`#94a3b8` on `#47556920`), 3.5px slate border | Detailed tracing and internal debug events |
+
+---
+
 ## 3. Global Visual Symmetry & Component System
 
 To ensure a balanced layout across all LuCI views, the theme enforces a unified geometric grid:
