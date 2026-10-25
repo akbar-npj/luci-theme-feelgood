@@ -10,10 +10,10 @@ This theme has been fully ported to support modern OpenWrt releases (**OpenWrt 2
 * **Dual Navigation Orientations**:
   * **Horizontal Tabs (Default)**: Full-width topbar with categories and dropdown submenus, maximizing screen real estate.
   * **Vertical Sidebar (Selectable)**: Classic left sidebar accordion menu, toggleable anytime via the header button.
-* **Dark Theme (Default) & White Theme (Selectable)**:
-  * **Dark Theme (Default)**: Deep obsidian slate background (`#0e121a`), comfortable for long sessions, with no shiny blinding white glare.
-  * **White / Light Theme (Selectable)**: Crisp, high-contrast light theme with subtle borders.
-  * **Zero-FOUC Instant Switching**: Saved in `localStorage` and applied before DOM rendering.
+* **Dedicated High-Contrast Dark Theme**:
+  * Deep obsidian slate canvas (`#090d16`), comfortable for long sessions, with zero shiny glare.
+  * Elevated card containers (`#141b29`), distinct table headers, and high-contrast typography.
+  * Zero-FOUC instant paint applied before DOM rendering.
 * **Smart Telemetry Color-Coding**: Dynamic contextual color-coding for Wi-Fi signal quality, data rates, traffic directions (TX/RX), frequency bands, and multi-level progress bars.
 * **Hardware Thermal Telemetry**: Real-time multi-zone SoC, Wi-Fi radio, and motherboard temperature monitoring on the LuCI status overview.
 * **Responsive Layout**: Optimized views with off-canvas mobile drawer for phones and tablets.

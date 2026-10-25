@@ -491,36 +491,10 @@ return baseclass.extend({
 			});
 		}
 
-		// 2. Color Theme (Dark vs Light/White) - Default: dark
-		const currentColor = document.documentElement.getAttribute('data-theme-color') ||
-			localStorage.getItem('luci-theme-feelgood-color') || 'dark';
-		document.documentElement.setAttribute('data-theme-color', currentColor);
-		document.documentElement.setAttribute('data-theme-style', currentColor === 'dark' ? 'modern' : 'light');
-
-		const colorBtn = document.querySelector('#theme_color_btn') || document.querySelector('#theme_style_btn');
-		if (colorBtn) {
-			const colorLabel = colorBtn.querySelector('.color-label') || colorBtn.querySelector('.style-label');
-			const colorIcon = colorBtn.querySelector('.toggle-icon') || colorBtn.querySelector('.style-icon');
-			const updateColorUI = (color) => {
-				if (colorLabel) colorLabel.textContent = color === 'light' ? 'Light' : 'Dark';
-				if (colorIcon) colorIcon.textContent = color === 'light' ? '☀️' : '🌙';
-				colorBtn.setAttribute('title', color === 'light' ? _('Switch to Dark Theme') : _('Switch to White / Light Theme'));
-			};
-			updateColorUI(currentColor);
-
-			colorBtn.addEventListener('click', (e) => {
-				e.preventDefault();
-				const oldColor = document.documentElement.getAttribute('data-theme-color') || 'dark';
-				const nextColor = oldColor === 'dark' ? 'light' : 'dark';
-				document.documentElement.setAttribute('data-theme-color', nextColor);
-				document.documentElement.setAttribute('data-theme-style', nextColor === 'dark' ? 'modern' : 'light');
-				localStorage.setItem('luci-theme-feelgood-color', nextColor);
-				updateColorUI(nextColor);
-
-				// Re-colorize telemetry
-				Colorizer.schedule();
-			});
-		}
+		// 2. Lock to Dark Theme
+		document.documentElement.setAttribute('data-theme-color', 'dark');
+		document.documentElement.setAttribute('data-theme-style', 'modern');
+		localStorage.removeItem('luci-theme-feelgood-color');
 	},
 
 	render(tree) {

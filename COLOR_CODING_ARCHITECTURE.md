@@ -1,6 +1,6 @@
-# Feelgood Theme Architecture: Navigation & Color System
+# Feelgood Theme Architecture: Navigation & Dark Color System
 
-This document outlines the design, features, and implementation of the dual navigation orientation system, dark/light color modes, and dynamic telemetry color-coding in **LuCI Theme Feelgood** for modern OpenWrt releases (21.02, 23.05, 24.10, and 25.x / master).
+This document outlines the design, features, and implementation of the dual navigation orientation system and high-contrast dynamic telemetry dark theme in **LuCI Theme Feelgood** for modern OpenWrt releases (21.02, 23.05, 24.10, and 25.x / master).
 
 ---
 
@@ -11,8 +11,8 @@ This document outlines the design, features, and implementation of the dual navi
 * **Vertical Sidebar (Selectable)**: Users who prefer the classic vertical sidebar layout can switch instantly via a header toggle (`⬌ Horizontal` / `⬍ Vertical`). The left sidebar smoothly opens with an accordion menu.
 * **Mobile / Tablet Responsive Drawer**: On viewports ≤ 992px, the menu automatically collapses into an off-canvas drawer triggered by the hamburger icon (`.showSide`).
 
-### B. Color Modes & Visual Hierarchy
-* **Dark Theme (Default)**: Designed for comfort, reduced eye strain, and clear visual hierarchy during network operations.
+### B. High-Contrast Dark Visual Hierarchy
+* **Dedicated Dark Theme**: Designed specifically for network administration, comfort, reduced eye strain, and clear visual hierarchy.
   - **Unused Space / Canvas**: Deep dark slate (`#090d16`), non-distracting background for page margins and empty areas.
   - **Information Display Areas (Cards / Sections)**: Elevated dark navy-slate containers (`#141b29`) with subtle borders (`#212f45`) that immediately draw the eye to functional controls.
   - **Table Headers**: Distinct `#192336` banner with crisp `#f8fafc` titles.
@@ -24,21 +24,20 @@ This document outlines the design, features, and implementation of the dual navi
     - Secondary Descriptions: `#94a3b8` (never washed out, > 7:1 contrast ratio).
     - Metrics, Quantities & Numbers: Luminous, high-contrast monospace highlights (`#38bdf8`, `#34d399`, `#fbbf24`, `#f43f5e`).
   - **Zero White-on-White Collisions**: All legacy LuCI hardcoded light backgrounds (`.warning`, `.alert-message`, `.ifacebox`, `.ifacebadge`, `#syslog`, diagnostic `pre` terminals) are completely themed so text and numbers never fade or disappear.
-* **White / Light Theme (Selectable)**: For users who prefer a crisp, high-key interface (`#EBF1F6` canvas, `#ffffff` cards). Selectable via the header button (`🌙 Dark` / `☀️ Light`).
-* **Instant Persistence**: Selected preferences are saved in browser `localStorage` (`luci-theme-feelgood-nav`, `luci-theme-feelgood-color`) and applied prior to initial paint via an anti-FOUC script in `<head>`, ensuring zero flickering.
+* **Instant Persistence**: Selected navigation layout is saved in browser `localStorage` (`luci-theme-feelgood-nav`) and applied prior to initial paint via an anti-FOUC script in `<head>`, ensuring zero flickering.
 
 ---
 
 ## 2. Telemetry Color-Coding Reference
 
 ### 📶 WiFi Connectivity & Signal Quality
-| Metric (Signal) | Quality Level | Dark Theme Styling | Light Theme Styling | Operational Semantics |
-| :--- | :---: | :--- | :--- | :--- |
-| **≥ -55 dBm** (≥ 75%) | `excellent` | Emerald Green (`#10b981`) on translucent dark mint | Emerald Green on soft mint pill | Optimal signal, max MCS |
-| **-67 to -56 dBm** (50–74%) | `good` | Cyan (`#06b6d4`) on translucent dark cyan | Cyan on sky-blue pill | Strong stable connection |
-| **-79 to -68 dBm** (25–49%) | `fair` | Warm Amber (`#f59e0b`) on translucent dark gold | Warm Amber on gold pill | Moderate signal, possible retries |
-| **≤ -80 dBm** (< 25%) | `poor` | Coral Red (`#f43f5e`) on translucent dark rose | Coral Red on rose pill | Weak reception / deadzone |
-| **Noise floor (≤ -90 dBm)** | `noise` | Slate Gray (`#94a3b8`) on dark chip | Slate Gray on soft gray pill | Background RF noise |
+| Metric (Signal) | Quality Level | Dark Theme Styling | Operational Semantics |
+| :--- | :---: | :--- | :--- |
+| **≥ -55 dBm** (≥ 75%) | `excellent` | Emerald Green (`#10b981`) on translucent dark mint | Optimal signal, max MCS |
+| **-67 to -56 dBm** (50–74%) | `good` | Cyan (`#06b6d4`) on translucent dark cyan | Strong stable connection |
+| **-79 to -68 dBm** (25–49%) | `fair` | Warm Amber (`#f59e0b`) on translucent dark gold | Moderate signal, possible retries |
+| **≤ -80 dBm** (< 25%) | `poor` | Coral Red (`#f43f5e`) on translucent dark rose | Weak reception / deadzone |
+| **Noise floor (≤ -90 dBm)** | `noise` | Slate Gray (`#94a3b8`) on dark chip | Background RF noise |
 
 ---
 
@@ -159,13 +158,11 @@ The architecture consists of three synchronized layers:
 In `<head>`, before stylesheets or body render:
 ```javascript
 (function() {
-    var serverColor = '{{ initial_color }}';
     var serverNav = '{{ initial_nav }}';
-    var color = localStorage.getItem('luci-theme-feelgood-color') || serverColor || 'dark';
     var nav = localStorage.getItem('luci-theme-feelgood-nav') || serverNav || 'horizontal';
-    document.documentElement.setAttribute('data-theme-color', color);
+    document.documentElement.setAttribute('data-theme-color', 'dark');
     document.documentElement.setAttribute('data-theme-nav', nav);
-    document.documentElement.setAttribute('data-theme-style', color === 'dark' ? 'modern' : 'light');
+    document.documentElement.setAttribute('data-theme-style', 'modern');
 })();
 ```
 
@@ -176,17 +173,16 @@ In `<head>`, before stylesheets or body render:
 * `renderMainMenu(tree, url)` continues to power the vertical sidebar `#navBox` for vertical mode and mobile drawer.
 
 ### C. Theme Variable Architecture (`cascade.css`)
-* CSS variables (`--bg-canvas`, `--bg-card`, `--text-heading`, etc.) adapt to `html[data-theme-color="dark"]` and `html[data-theme-color="light"]`.
+* CSS variables (`--bg-canvas`, `--bg-card`, `--text-heading`, etc.) provide a unified, contrast-checked dark palette.
 * Layout switches seamlessly between `html[data-theme-nav="horizontal"]` and `html[data-theme-nav="vertical"]`.
 
 ---
 
 ## 4. Customization & UCI Defaults
 
-Administrators can set the router-wide default in `/etc/config/luci`:
+Administrators can set the default navigation layout in `/etc/config/luci`:
 ```bash
-uci set luci.theme_feelgood.color='dark'       # Options: 'dark', 'light'
 uci set luci.theme_feelgood.nav='horizontal'   # Options: 'horizontal', 'vertical'
 uci commit luci
 ```
-Users can switch preferences at any time using the header toggle buttons (`[ ⬌ Horizontal ]` and `[ 🌙 Dark ]`).
+Users can switch navigation preferences at any time using the header toggle button (`[ ⬌ Horizontal ]` / `[ ⬍ Vertical ]`).

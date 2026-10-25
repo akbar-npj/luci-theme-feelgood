@@ -53,13 +53,11 @@
 <script src="{{ media }}/js/ScrollY.js"></script>
 <script>
 	(function() {
-		var serverColor = '{{ initial_color }}';
 		var serverNav = '{{ initial_nav }}';
-		var color = localStorage.getItem('luci-theme-feelgood-color') || serverColor || 'dark';
 		var nav = localStorage.getItem('luci-theme-feelgood-nav') || serverNav || 'horizontal';
-		document.documentElement.setAttribute('data-theme-color', color);
+		document.documentElement.setAttribute('data-theme-color', 'dark');
 		document.documentElement.setAttribute('data-theme-nav', nav);
-		document.documentElement.setAttribute('data-theme-style', color === 'dark' ? 'modern' : 'light');
+		document.documentElement.setAttribute('data-theme-style', 'modern');
 	})();
 </script>
 </head>
@@ -100,10 +98,6 @@
 						<span id="nav_layout_btn" class="label theme-toggle-btn nav-toggle" title="{{ _('Toggle Navigation: Horizontal / Vertical') }}">
 							<span class="toggle-icon">⬌</span>
 							<span class="nav-label">Horizontal</span>
-						</span>
-						<span id="theme_color_btn" class="label theme-toggle-btn color-toggle" title="{{ _('Toggle Theme: Dark / Light') }}">
-							<span class="toggle-icon">🌙</span>
-							<span class="color-label">Dark</span>
 						</span>
 						<span id="logout_btn" class="label logout" style="display:none">
 							<a href="{{ dispatcher.build_url('admin/logout') }}">{{ _('Log out') }}</a>

@@ -2830,110 +2830,6 @@ html[data-theme-color="dark"] {
     --badge-font-weight: 700;
 }
 
-/* Selectable: Light / White Theme */
-html[data-theme-color="light"] {
-    --bg-canvas: #EBF1F6;
-    --bg-card: #ffffff;
-    --bg-card-header: #f8fafc;
-    --bg-card-sub: #f8fafc;
-
-    --bg-row-odd: #ffffff;
-    --bg-row-even: #f9fbfd;
-    --bg-row-hover: #f1f5f9;
-
-    --bg-input: #ffffff;
-    --border-input: #cbd5e1;
-    --border-input-focus: #0284c7;
-
-    --header-bg: #ffffff;
-    --sidebar-bg: #354057;
-    --dropdown-bg: #ffffff;
-    --dropdown-hover-bg: rgba(6, 182, 212, 0.1);
-    --dropdown-active-bg: rgba(6, 182, 212, 0.18);
-
-    --border-color: #e2e8f0;
-    --border-subtle: #edf2f7;
-    --shadow-color: rgba(0, 0, 0, 0.1);
-
-    --text-heading: #0f172a;
-    --text-color: #1e293b;
-    --text-muted: #64748b;
-    --accent-color: #0284c7;
-    --accent-hover: #0369a1;
-
-    --data-num: #0284c7;
-    --data-good: #059669;
-    --data-warn: #d97706;
-    --data-danger: #dc2626;
-    --data-neutral: #334155;
-
-    --nav-text: #475569;
-    --nav-hover-bg: rgba(0, 0, 0, 0.05);
-    --nav-active-text: #0284c7;
-    --nav-active-bg: rgba(2, 132, 199, 0.1);
-
-    /* Signal colors - Pastel */
-    --sig-excellent: #10b981;
-    --sig-excellent-bg: rgba(16, 185, 129, 0.12);
-    --sig-good: #06b6d4;
-    --sig-good-bg: rgba(6, 182, 212, 0.12);
-    --sig-fair: #f59e0b;
-    --sig-fair-bg: rgba(245, 158, 11, 0.12);
-    --sig-poor: #f43f5e;
-    --sig-poor-bg: rgba(244, 63, 94, 0.12);
-    --sig-noise: #64748b;
-    --sig-noise-bg: rgba(100, 116, 139, 0.12);
-
-    /* Data rate colors */
-    --rate-gigabit: #8b5cf6;
-    --rate-gigabit-bg: rgba(139, 92, 246, 0.12);
-    --rate-fast: #10b981;
-    --rate-fast-bg: rgba(16, 185, 129, 0.12);
-    --rate-normal: #0284c7;
-    --rate-normal-bg: rgba(2, 132, 199, 0.12);
-    --rate-low: #64748b;
-    --rate-low-bg: rgba(100, 116, 139, 0.12);
-
-    /* Traffic direction */
-    --tx-color: #9333ea;
-    --tx-bg: rgba(147, 51, 234, 0.12);
-    --rx-color: #059669;
-    --rx-bg: rgba(5, 150, 105, 0.12);
-
-    /* WiFi Bands */
-    --band-6g: #7c3aed;
-    --band-6g-bg: rgba(124, 58, 237, 0.12);
-    --band-5g: #0284c7;
-    --band-5g-bg: rgba(2, 132, 199, 0.12);
-    --band-2g: #d97706;
-    --band-2g-bg: rgba(217, 119, 6, 0.12);
-
-    /* Progress bar dynamic gradients */
-    --bar-good: linear-gradient(90deg, #10b981, #34d399);
-    --bar-normal: linear-gradient(90deg, #468EA4, #06b6d4);
-    --bar-warning: linear-gradient(90deg, #f59e0b, #f97316);
-    --bar-critical: linear-gradient(90deg, #f43f5e, #e11d48);
-
-    /* Port links */
-    --port-up: #10b981;
-    --port-up-bg: rgba(16, 185, 129, 0.14);
-    --port-down: #94a3b8;
-    --port-down-bg: rgba(148, 163, 184, 0.14);
-
-    /* Thermal / Temperature colors */
-    --temp-cool: #06b6d4;
-    --temp-cool-bg: rgba(6, 182, 212, 0.12);
-    --temp-normal: #10b981;
-    --temp-normal-bg: rgba(16, 185, 129, 0.12);
-    --temp-hot: #f59e0b;
-    --temp-hot-bg: rgba(245, 158, 11, 0.12);
-    --temp-critical: #f43f5e;
-    --temp-critical-bg: rgba(244, 63, 94, 0.15);
-
-    --badge-border: transparent;
-    --badge-font-weight: 600;
-}
-
 /* --------------------------------------------------------------------------
    2. GLOBAL THEME COMPONENT STYLES
    -------------------------------------------------------------------------- */
@@ -3202,82 +3098,6 @@ html[data-theme-color="dark"] .login > .main .cbi-value input[type="password"],
     background-color: #141b29 !important;
     color: #f8fafc !important;
     border: 1px solid #26354d !important;
-    padding-left: 48px !important;
-    padding-right: 48px !important;
-    background-repeat: no-repeat !important;
-    background-position: 16px center !important;
-    background-size: 20px 20px !important;
-}
-
-/* Light / White Theme Rules */
-html[data-theme-color="light"] {
-    color-scheme: light;
-}
-
-html[data-theme-color="light"] body,
-html[data-theme-color="light"] .main,
-html[data-theme-color="light"] .logged-in .main {
-    background-color: #EBF1F6 !important;
-    color: #334155 !important;
-}
-
-html[data-theme-color="light"] .cbi-section {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #334155 !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
-}
-
-html[data-theme-color="light"] table,
-html[data-theme-color="light"] .table {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #334155 !important;
-}
-
-html[data-theme-color="light"] table > tbody > tr > td,
-html[data-theme-color="light"] .table > .tbody > .tr > .td,
-html[data-theme-color="light"] .tr > .td {
-    border-top: 1px solid #edf2f7 !important;
-    color: #334155 !important;
-}
-
-html[data-theme-color="light"] table > thead > tr > th,
-html[data-theme-color="light"] .table > .thead > .tr > .th,
-html[data-theme-color="light"] .th,
-html[data-theme-color="light"] .cbi-section-table-titles .cbi-section-table-cell {
-    background-color: #f8fafc !important;
-    border-top: 1px solid #e2e8f0 !important;
-    color: #1e293b !important;
-}
-
-html[data-theme-color="light"] .cbi-section > h3:first-child,
-html[data-theme-color="light"] .panel-title,
-html[data-theme-color="light"] h2,
-html[data-theme-color="light"] h3,
-html[data-theme-color="light"] h4 {
-    color: #1e293b !important;
-}
-
-html[data-theme-color="light"] .cbi-value-title {
-    color: #1e293b !important;
-}
-
-html[data-theme-color="light"] input,
-html[data-theme-color="light"] select,
-html[data-theme-color="light"] textarea,
-html[data-theme-color="light"] .cbi-dropdown {
-    background-color: #ffffff !important;
-    color: #1e293b !important;
-    border: 1px solid #cbd5e1 !important;
-}
-
-html[data-theme-color="light"] .login > .main .cbi-value .cbi-input-text,
-html[data-theme-color="light"] .login > .main .cbi-value input[type="text"],
-html[data-theme-color="light"] .login > .main .cbi-value input[type="password"] {
-    background-color: #ffffff !important;
-    color: #1e293b !important;
-    border: 1px solid #cbd5e1 !important;
     padding-left: 48px !important;
     padding-right: 48px !important;
     background-repeat: no-repeat !important;
@@ -3672,17 +3492,6 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
     font-size: 0.88rem;
 }
 
-html[data-theme-color="light"] .theme-toggle-btn {
-    background-color: #f1f5f9;
-    color: #1e293b !important;
-    border: 1px solid #cbd5e1;
-}
-
-html[data-theme-color="light"] .theme-toggle-btn:hover {
-    background-color: #e2e8f0;
-    border-color: #0284c7;
-}
-
 /* Logout Button */
 .label.logout {
     margin: 0;
@@ -3882,11 +3691,6 @@ html[data-theme-color="light"] .theme-toggle-btn:hover {
     font-size: 0.75rem;
     display: inline-block;
 }
-html[data-theme-color="light"] .badge-ip {
-    color: #0369a1;
-    background-color: rgba(2, 132, 199, 0.12);
-    border: 1px solid rgba(2, 132, 199, 0.25);
-}
 
 /* MAC Address Badges */
 .badge-mac {
@@ -3900,11 +3704,6 @@ html[data-theme-color="light"] .badge-ip {
     font-size: 0.75rem;
     display: inline-block;
 }
-html[data-theme-color="light"] .badge-mac {
-    color: #7c3aed;
-    background-color: rgba(124, 58, 237, 0.12);
-    border: 1px solid rgba(124, 58, 237, 0.25);
-}
 
 /* Operational Status Badges */
 .badge-status-good {
@@ -3912,32 +3711,17 @@ html[data-theme-color="light"] .badge-mac {
     background-color: rgba(52, 211, 153, 0.18);
     border: 1px solid rgba(52, 211, 153, 0.35);
 }
-html[data-theme-color="light"] .badge-status-good {
-    color: #059669;
-    background-color: rgba(16, 185, 129, 0.14);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-}
 
 .badge-status-warn {
     color: #fbbf24;
     background-color: rgba(251, 191, 36, 0.18);
     border: 1px solid rgba(251, 191, 36, 0.35);
 }
-html[data-theme-color="light"] .badge-status-warn {
-    color: #d97706;
-    background-color: rgba(245, 158, 11, 0.14);
-    border: 1px solid rgba(245, 158, 11, 0.25);
-}
 
 .badge-status-bad {
     color: #f43f5e;
     background-color: rgba(244, 63, 94, 0.18);
     border: 1px solid rgba(244, 63, 94, 0.35);
-}
-html[data-theme-color="light"] .badge-status-bad {
-    color: #dc2626;
-    background-color: rgba(244, 63, 94, 0.14);
-    border: 1px solid rgba(244, 63, 94, 0.25);
 }
 
 /* --------------------------------------------------------------------------
