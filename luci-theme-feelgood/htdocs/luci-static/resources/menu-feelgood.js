@@ -309,11 +309,11 @@ const LogViewer = {
 						: '') +
 					(counts.notice > 0
 						? `<button type="button" class="feelgood-log-filter-btn ${filterSev === 'notice' ? 'active' : ''}" data-sev="notice">` +
-								`ℹ️ Notices <span class="pill-cnt">${counts.notice}</span>` +
+								`✅ Notices <span class="pill-cnt">${counts.notice}</span>` +
 						  `</button>`
 						: '') +
 					`<button type="button" class="feelgood-log-filter-btn ${filterSev === 'info' ? 'active' : ''}" data-sev="info">` +
-						`Info <span class="pill-cnt">${counts.info}</span>` +
+						`🟢 Info <span class="pill-cnt">${counts.info}</span>` +
 					`</button>` +
 				`</div>` +
 				`<div class="feelgood-log-actions">` +

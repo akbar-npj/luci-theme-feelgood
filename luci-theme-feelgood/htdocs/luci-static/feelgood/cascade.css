@@ -3959,15 +3959,15 @@ div[style*="grid-template-columns"] > .ifacebox > .ifacebox-head:first-child,
 }
 
 .feelgood-log-filter-btn[data-sev="notice"].active {
-    background: rgba(56, 189, 248, 0.2);
-    border-color: rgba(56, 189, 248, 0.5);
-    color: #38bdf8;
+    background: rgba(52, 211, 153, 0.22);
+    border-color: rgba(52, 211, 153, 0.55);
+    color: #34d399;
 }
 
 .feelgood-log-filter-btn[data-sev="info"].active {
-    background: rgba(148, 163, 184, 0.2);
-    border-color: rgba(148, 163, 184, 0.5);
-    color: #cbd5e1;
+    background: rgba(74, 222, 128, 0.18);
+    border-color: rgba(74, 222, 128, 0.5);
+    color: #4ade80;
 }
 
 .feelgood-log-actions {
@@ -4072,11 +4072,18 @@ div[style*="grid-template-columns"] > .ifacebox > .ifacebox-head:first-child,
 }
 
 .feelgood-log-row.log-sev-notice {
-    border-left-color: #38bdf8;
-    background-color: rgba(56, 189, 248, 0.02);
+    border-left-color: #34d399;
+    background-color: rgba(52, 211, 153, 0.04);
 }
 .feelgood-log-row.log-sev-notice:hover {
-    background-color: rgba(56, 189, 248, 0.06);
+    background-color: rgba(52, 211, 153, 0.09);
+}
+
+.feelgood-log-row.log-sev-info {
+    border-left-color: transparent;
+}
+.feelgood-log-row.log-sev-info:hover {
+    background-color: rgba(74, 222, 128, 0.04);
 }
 
 .feelgood-log-row.log-sev-debug {
@@ -4096,7 +4103,8 @@ div[style*="grid-template-columns"] > .ifacebox > .ifacebox-head:first-child,
 .feelgood-log-row.log-sev-crit .log-num { color: #f43f5e; font-weight: 600; }
 .feelgood-log-row.log-sev-err .log-num { color: #f87171; font-weight: 600; }
 .feelgood-log-row.log-sev-warn .log-num { color: #fbbf24; font-weight: 600; }
-.feelgood-log-row.log-sev-notice .log-num { color: #38bdf8; }
+.feelgood-log-row.log-sev-notice .log-num { color: #34d399; font-weight: 600; }
+.feelgood-log-row.log-sev-info .log-num { color: #64748b; }
 
 .feelgood-log-row .log-time {
     flex: 0 0 auto;
@@ -4145,14 +4153,14 @@ div[style*="grid-template-columns"] > .ifacebox > .ifacebox-head:first-child,
     border: 1px solid rgba(251, 191, 36, 0.45);
 }
 .feelgood-log-row .log-badge-notice {
-    color: #bae6fd;
-    background: rgba(14, 165, 233, 0.2);
-    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #6ee7b7;
+    background: rgba(52, 211, 153, 0.22);
+    border: 1px solid rgba(52, 211, 153, 0.45);
 }
 .feelgood-log-row .log-badge-info {
-    color: #cbd5e1;
-    background: rgba(100, 116, 139, 0.18);
-    border: 1px solid rgba(148, 163, 184, 0.28);
+    color: #a7f3d0;
+    background: rgba(74, 222, 128, 0.16);
+    border: 1px solid rgba(74, 222, 128, 0.32);
 }
 .feelgood-log-row .log-badge-debug {
     color: #94a3b8;
@@ -4174,7 +4182,7 @@ div[style*="grid-template-columns"] > .ifacebox > .ifacebox-head:first-child,
 .feelgood-log-row.log-sev-crit .log-msg { color: #ffe4e6; }
 .feelgood-log-row.log-sev-err .log-msg { color: #fecdd3; }
 .feelgood-log-row.log-sev-warn .log-msg { color: #fef3c7; }
-.feelgood-log-row.log-sev-notice .log-msg { color: #e0f2fe; }
+.feelgood-log-row.log-sev-notice .log-msg { color: #ecfdf5; }
 .feelgood-log-row.log-sev-debug .log-msg { color: #94a3b8; }
 
 .feelgood-log-empty {
