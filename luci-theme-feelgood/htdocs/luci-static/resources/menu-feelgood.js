@@ -976,7 +976,8 @@ return baseclass.extend({
 				if (logoutBtn) {
 					var logoutA = logoutBtn.querySelector('a');
 					if (logoutA) {
-						logoutA.href = L.url(child.name);
+						var logoutPath = child.name.indexOf('/') !== -1 ? child.name : (url ? url + '/' + child.name : 'admin/logout');
+						logoutA.href = L.url(logoutPath);
 						logoutA.textContent = _(child.title);
 					}
 					logoutBtn.style.display = 'inline-block';
@@ -993,7 +994,7 @@ return baseclass.extend({
 				if (logoutBtn) {
 					var logoutA = logoutBtn.querySelector('a');
 					if (logoutA) {
-						logoutA.href = L.url(url, child.name);
+						logoutA.href = L.url(url ? url + '/' + child.name : 'admin/logout');
 						logoutA.textContent = _(child.title);
 					}
 					logoutBtn.style.display = 'inline-block';
