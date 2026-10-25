@@ -323,19 +323,69 @@ const Colorizer = {
 		let html = cell.innerHTML;
 		let modified = false;
 
-		// 1. WiFi Signal & Quality (e.g. "-54 dBm" or "Signal: -65 dBm / Quality: 80%")
-		if (/-?\d+\s*dBm/i.test(html) && !cell.querySelector('.badge-signal')) {
-			html = html.replace(/(-?\d+)\s*dBm/gi, (match, valStr) => {
-				const val = Math.abs(parseInt(valStr, 10));
-				let q = 'poor';
-				if (val <= 55) q = 'excellent';
-				else if (val <= 67) q = 'good';
-				else if (val <= 79) q = 'fair';
-				else if (val >= 90) q = 'noise'; // Noise floor indicator
+		// 1. RF Metrics: TX Power, Noise Floor, and WiFi Signal (dBm)
+		if (/-?\d+(?:\.\d+)?\s*dBm/i.test(html) && !cell.querySelector('.badge-signal, .badge-noise, .badge-tx-power')) {
+			const prevText = cell.previousElementSibling ? (cell.previousElementSibling.textContent || '') : '';
+			const labelText = cell.closest ? (cell.closest('.cbi-value')?.querySelector('.cbi-value-title')?.textContent || '') : '';
+			const cellId = cell.id || '';
 
-				return `<span class="badge-colored badge-signal" data-quality="${q}">${match}</span>`;
-			});
-			modified = true;
+			const isNoise = /Noise/i.test(rawText) || /Noise/i.test(prevText) || /Noise/i.test(labelText) || /noise/i.test(cellId);
+			const isTxPower = /(?:TX[\s-]*Power|txpower|Current\s*power)/i.test(rawText) ||
+			                  /(?:TX[\s-]*Power|txpower)/i.test(prevText) ||
+			                  /(?:TX[\s-]*Power|txpower)/i.test(labelText) ||
+			                  /(?:txpower|tx_power)/i.test(cellId);
+
+			// A. Compound Signal / Noise (e.g. "-54/-95 dBm" or "-54 / -95 dBm" or "---/-95 dBm")
+			if (/(-?\d+(?:\.\d+)?|---)\s*\/\s*(-?\d+(?:\.\d+)?)\s*dBm/i.test(html)) {
+				html = html.replace(/(-?\d+(?:\.\d+)?|---)\s*\/\s*(-?\d+(?:\.\d+)?)\s*dBm/gi, (match, sSig, sNoise) => {
+					let sigHtml;
+					if (sSig !== '---') {
+						const fSig = parseFloat(sSig);
+						const vSig = Math.abs(fSig);
+						let q = 'poor';
+						if (fSig !== 0) {
+							if (vSig <= 55) q = 'excellent';
+							else if (vSig <= 67) q = 'good';
+							else if (vSig <= 79) q = 'fair';
+						}
+						sigHtml = `<span class="badge-colored badge-signal" data-quality="${q}">${sSig} dBm</span>`;
+					} else {
+						sigHtml = `<span class="badge-colored badge-signal" data-quality="poor">--- dBm</span>`;
+					}
+					const noiseHtml = `<span class="badge-colored badge-noise"><span class="noise-icon">🔇</span> ${sNoise} dBm</span>`;
+					return `${sigHtml} <span class="badge-sep">/</span> ${noiseHtml}`;
+				});
+				modified = true;
+			}
+			// B. Radio Transmitter Output Power (e.g. "TX Power: 25.00 dBm" or "25 dBm")
+			else if (isTxPower) {
+				html = html.replace(/(\d+(?:\.\d+)?)\s*dBm/gi, (match) => {
+					return `<span class="badge-colored badge-tx-power"><span class="tx-pwr-icon">⚡</span> ${match}</span>`;
+				});
+				modified = true;
+			}
+			// C. Dedicated RF Noise Floor (e.g. "Noise: -71.00 dBm" or "-95 dBm")
+			else if (isNoise) {
+				html = html.replace(/(-?\d+(?:\.\d+)?)\s*dBm/gi, (match) => {
+					return `<span class="badge-colored badge-noise"><span class="noise-icon">🔇</span> ${match}</span>`;
+				});
+				modified = true;
+			}
+			// D. Client Reception Signal (RSSI) (e.g. "Signal: -54 dBm" or "-65 dBm")
+			else {
+				html = html.replace(/(-?\d+(?:\.\d+)?)\s*dBm/gi, (match, valStr) => {
+					const fVal = parseFloat(valStr);
+					const val = Math.abs(fVal);
+					let q = 'poor';
+					if (fVal !== 0) {
+						if (val <= 55) q = 'excellent';
+						else if (val <= 67) q = 'good';
+						else if (val <= 79) q = 'fair';
+					}
+					return `<span class="badge-colored badge-signal" data-quality="${q}">${match}</span>`;
+				});
+				modified = true;
+			}
 		}
 
 		// 2. Data Rates (e.g. "866.7 Mbit/s", "1.2 Gbit/s", "54 Mbit/s")

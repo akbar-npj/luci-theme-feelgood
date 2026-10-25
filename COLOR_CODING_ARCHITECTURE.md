@@ -30,14 +30,16 @@ This document outlines the design, features, and implementation of the dual navi
 
 ## 2. Telemetry Color-Coding Reference
 
-### 📶 WiFi Connectivity & Signal Quality
-| Metric (Signal) | Quality Level | Dark Theme Styling | Operational Semantics |
+### 📶 WiFi Connectivity, RF Metrics & Signal Quality
+| Metric / Context | Classification | Dark Theme Styling | Operational Semantics |
 | :--- | :---: | :--- | :--- |
-| **≥ -55 dBm** (≥ 75%) | `excellent` | Emerald Green (`#10b981`) on translucent dark mint | Optimal signal, max MCS |
-| **-67 to -56 dBm** (50–74%) | `good` | Cyan (`#06b6d4`) on translucent dark cyan | Strong stable connection |
-| **-79 to -68 dBm** (25–49%) | `fair` | Warm Amber (`#f59e0b`) on translucent dark gold | Moderate signal, possible retries |
-| **≤ -80 dBm** (< 25%) | `poor` | Coral Red (`#f43f5e`) on translucent dark rose | Weak reception / deadzone |
-| **Noise floor (≤ -90 dBm)** | `noise` | Slate Gray (`#94a3b8`) on dark chip | Background RF noise |
+| **Client Signal ≥ -55 dBm** (≥ 75%) | `excellent` | Emerald Green (`#34d399`) on translucent dark mint | Optimal client reception, max MCS |
+| **Client Signal -67 to -56 dBm** (50–74%) | `good` | Cyan (`#38bdf8`) on translucent dark cyan | Strong stable client connection |
+| **Client Signal -79 to -68 dBm** (25–49%) | `fair` | Warm Amber (`#fbbf24`) on translucent dark gold | Moderate client signal, possible retries |
+| **Client Signal ≤ -80 dBm** (< 25%) | `poor` | Coral Red (`#f43f5e`) on translucent dark rose | Weak client reception / deadzone |
+| **Radio TX Power** (e.g. `25.00 dBm`) | `tx-power` | Electric Cyan (`#38bdf8`) with `⚡` icon | Radio transmitter output power |
+| **RF Noise Floor** (e.g. `-71.00 dBm`, `-95 dBm`) | `noise` | Slate Gray (`#94a3b8`) with `🔇` icon | Ambient background RF interference |
+| **Dual Signal / Noise** (e.g. `-54/-95 dBm`) | Compound | Split badges: `[Signal dBm] / [🔇 Noise dBm]` | Associated stations link telemetry |
 
 ---
 

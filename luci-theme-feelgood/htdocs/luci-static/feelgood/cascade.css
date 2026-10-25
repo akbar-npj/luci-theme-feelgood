@@ -3541,6 +3541,10 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
 }
 
 /* Signal Quality Badges */
+.badge-signal {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+}
 .badge-signal[data-quality="excellent"] {
     color: var(--sig-excellent);
     background-color: var(--sig-excellent-bg);
@@ -3560,6 +3564,38 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
 .badge-signal[data-quality="noise"] {
     color: var(--sig-noise);
     background-color: var(--sig-noise-bg);
+}
+
+/* Radio TX Power Badge */
+.badge-tx-power {
+    color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.16);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+}
+.badge-tx-power .tx-pwr-icon {
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+/* RF Noise Floor Badge */
+.badge-noise {
+    color: #94a3b8;
+    background-color: rgba(148, 163, 184, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+}
+.badge-noise .noise-icon {
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+.badge-sep {
+    color: #64748b;
+    font-weight: 600;
+    margin: 0 3px;
 }
 
 /* Data Rate Badges */
