@@ -199,16 +199,7 @@ header {
 }
 
 footer {
-    text-align: right;
-    padding: 1rem;
-    color: #aaa;
-    font-size: 0.8rem;
-    text-shadow: 0px 0px 2px #BBB;
-}
-
-footer > a {
-    color: #aaa;
-    text-decoration: none;
+    display: none !important;
 }
 
 .loading {
@@ -1820,22 +1811,44 @@ header > .container > .pull-right > * {
     background-image: url(./cl-eye.png);
 }
 
-.login > .main .cbi-value .cbi-input-text {
-	margin: 0 0 16px;
-	padding-left: 36px;
-	width: 100%;
-    height: 42px;
-    border: 1px solid #556270;
-	border-radius: 20px;
-	background: #fff no-repeat 11px center / 19px;
+.login > .main .cbi-value .cbi-input-text,
+.login > .main .cbi-value input[type="text"],
+.login > .main .cbi-value input[type="password"] {
+	margin: 0 0 18px !important;
+	padding-left: 48px !important;
+	padding-right: 48px !important;
+	width: 100% !important;
+    height: 44px !important;
+    border: 1px solid var(--border-input) !important;
+	border-radius: 22px !important;
+	background-color: var(--bg-card) !important;
+	background-repeat: no-repeat !important;
+	background-position: 16px center !important;
+	background-size: 20px 20px !important;
+	color: var(--text-color) !important;
+	font-size: 0.95rem !important;
+	box-sizing: border-box !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.login > .main .cbi-value .cbi-input-text {
-	background-image: url(./user.png);
+.login > .main .cbi-value .cbi-input-text:focus,
+.login > .main .cbi-value input[type="text"]:focus,
+.login > .main .cbi-value input[type="password"]:focus {
+	border-color: var(--accent-color) !important;
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
 }
 
-.login > .main .cbi-value-last .cbi-input-text {
-	background-image: url(./pwd.png);
+.login > .main .cbi-value:first-child .cbi-input-text,
+.login > .main .cbi-value input[name="luci_username"],
+.login > .main .cbi-value input[type="text"] {
+	background-image: url(./user.png) !important;
+}
+
+.login > .main .cbi-value-last .cbi-input-text,
+.login > .main .cbi-value input[name="luci_password"],
+.login > .main .cbi-value input[type="password"] {
+	background-image: url(./pwd.png) !important;
 }
 
 .login > .main form > .cbi-page-actions {
@@ -1859,10 +1872,10 @@ header > .container > .pull-right > * {
 	background-color: #8A4568;
 }
 
-.login footer {
-    bottom: 0;
-    position: absolute;
-    width: 100%;
+footer,
+.login footer,
+footer.mobile-hide {
+    display: none !important;
 }
 
 /* logged in */
@@ -3181,10 +3194,19 @@ html[data-theme-color="dark"] .login .main-right .cbi-map-descr,
     color: var(--text-muted) !important;
 }
 html[data-theme-color="dark"] .login > .main .cbi-value .cbi-input-text,
-:root .login > .main .cbi-value .cbi-input-text {
-    background-color: #171d2b !important;
-    color: #ffffff !important;
-    border: 1px solid #2d384e !important;
+html[data-theme-color="dark"] .login > .main .cbi-value input[type="text"],
+html[data-theme-color="dark"] .login > .main .cbi-value input[type="password"],
+:root .login > .main .cbi-value .cbi-input-text,
+:root .login > .main .cbi-value input[type="text"],
+:root .login > .main .cbi-value input[type="password"] {
+    background-color: #141b29 !important;
+    color: #f8fafc !important;
+    border: 1px solid #26354d !important;
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+    background-repeat: no-repeat !important;
+    background-position: 16px center !important;
+    background-size: 20px 20px !important;
 }
 
 /* Light / White Theme Rules */
@@ -3248,6 +3270,19 @@ html[data-theme-color="light"] .cbi-dropdown {
     background-color: #ffffff !important;
     color: #1e293b !important;
     border: 1px solid #cbd5e1 !important;
+}
+
+html[data-theme-color="light"] .login > .main .cbi-value .cbi-input-text,
+html[data-theme-color="light"] .login > .main .cbi-value input[type="text"],
+html[data-theme-color="light"] .login > .main .cbi-value input[type="password"] {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+    background-repeat: no-repeat !important;
+    background-position: 16px center !important;
+    background-size: 20px 20px !important;
 }
 
 /* --------------------------------------------------------------------------

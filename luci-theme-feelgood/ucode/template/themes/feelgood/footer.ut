@@ -11,12 +11,7 @@
 				</div>
 			</div>
 		</div>
-		<footer class="mobile-hide">
-			<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer">Powered by {{ version.luciname }} ({{ version.luciversion }})</a> /
-			{{ entityencode(version.distname ?? '') }} {{ entityencode(version.distversion ?? '') }} ({{ entityencode(version.distrevision ?? '') }})
-			{% if (lua_active): %}
-				/ {{ _('Lua compatibility mode active') }}
-			{% endif %}
+		<footer class="mobile-hide" style="display:none !important">
 			<ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
 		</footer>
 
