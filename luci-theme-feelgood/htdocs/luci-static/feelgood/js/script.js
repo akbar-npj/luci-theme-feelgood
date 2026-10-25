@@ -1,12 +1,12 @@
 /**
- *  Rosy is a theme for LuCI. It is based on luci-theme-bootstrap
+ *  Feelgood is a theme for LuCI. It is based on luci-theme-bootstrap
  *
- *  luci-theme-rosy
- *     Copyright 2018 Rosy Song <rosysong@rosinson.com>
- *     Copyright 2018 Yan Lan Shen <yanlan.shen@rosinson.com>
+ *  luci-theme-feelgood
+ *     Copyright 2018-2026 Akbar NPJ <https://github.com/akbar-npj/luci-theme-feelgood>
+ *     Copyright 2018 Yan Lan Shen
  *
  *   Have a bug? Please create an issue here on GitHub!
- *       https://github.com/rosywrt/luci-theme-rosy/issues
+ *       https://github.com/akbar-npj/luci-theme-feelgood/issues
  *
  *  luci-theme-bootstrap:
  *      Copyright 2008 Steven Barth <steven@midlink.org>
