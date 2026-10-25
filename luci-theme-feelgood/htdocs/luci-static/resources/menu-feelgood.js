@@ -139,7 +139,55 @@ const Colorizer = {
 			}
 
 			if (pct !== null) {
-				const level = pct >= 85 ? 'critical' : (pct >= 60 ? 'warning' : 'normal');
+				// Detect context to distinguish "Free / Available" metrics from "Used / Consumed" metrics
+				let contextText = '';
+				const row = bar.closest('tr, .tr');
+				if (row) {
+					const firstCell = row.querySelector('td:first-child, .td:first-child');
+					if (firstCell) contextText += ' ' + firstCell.textContent;
+				}
+				const cbiValue = bar.closest('.cbi-value');
+				if (cbiValue) {
+					const title = cbiValue.querySelector('.cbi-value-title');
+					if (title) contextText += ' ' + title.textContent;
+				}
+				if (bar.previousElementSibling) {
+					contextText += ' ' + bar.previousElementSibling.textContent;
+				}
+
+				const isAvailableOrFree = /(?:free|available|idle|remaining)/i.test(contextText);
+				const isCacheOrBuffer = /(?:buffered|cached)/i.test(contextText);
+
+				let level = 'normal';
+				if (isAvailableOrFree) {
+					// For free/available resources (e.g. "Swap free", "Total Available"):
+					// High free percentage (>= 50%) is healthy and optimal -> GREEN ('good')
+					// Moderate free percentage (20% - 49%) -> AMBER ('warning')
+					// Low free percentage (< 20%) -> RED ('critical' - memory exhaustion)
+					if (pct >= 50) {
+						level = 'good';
+					} else if (pct >= 20) {
+						level = 'warning';
+					} else {
+						level = 'critical';
+					}
+				} else if (isCacheOrBuffer) {
+					// Buffer and cache memory are normal reclaimable resources
+					level = 'normal';
+				} else {
+					// For consumption metrics (e.g. "Used", "Disk space", "Active Connections"):
+					// Low usage (< 60%) is healthy -> GREEN ('good')
+					// Moderate usage (60% - 84%) -> AMBER ('warning')
+					// High usage (>= 85%) -> RED ('critical')
+					if (pct >= 85) {
+						level = 'critical';
+					} else if (pct >= 60) {
+						level = 'warning';
+					} else {
+						level = 'good';
+					}
+				}
+
 				if (bar.getAttribute('data-level') !== level)
 					bar.setAttribute('data-level', level);
 			}

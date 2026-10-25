@@ -65,11 +65,18 @@ This document outlines the design, features, and implementation of the dual navi
 
 ---
 
-### 📊 System Resource Health (CPU, RAM, Flash)
-Progress bars (`.cbi-progressbar`) dynamically shift colors based on utilization percentage:
-* **0% – 59% (Normal)**: Healthy Teal / Cyan (`--bar-normal`).
-* **60% – 84% (Warning)**: Attention Amber (`--bar-warning`).
-* **85% – 100% (Critical)**: Danger Red (`--bar-critical`) to warn of memory/storage exhaustion.
+### 📊 System Resource Health (CPU, RAM, Swap, Flash)
+Progress bars (`.cbi-progressbar`) dynamically shift colors based on utilization context:
+* **Availability Metrics (`Swap free`, `Total Available`, `Free space`)**:
+  * **≥ 50% Available (Optimal)**: Vibrant Emerald Green (`--bar-good`, `linear-gradient(90deg, #059669, #34d399)`). 100% free swap is healthy and green.
+  * **20% – 49% Available (Warning)**: Attention Amber (`--bar-warning`).
+  * **< 20% Available (Critical)**: Danger Red (`--bar-critical`) to warn of impending memory/swap exhaustion.
+* **Consumption Metrics (`Used`, `Disk space`, `Active Connections`)**:
+  * **0% – 59% (Healthy)**: Fresh Emerald Green (`--bar-good`).
+  * **60% – 84% (Warning)**: Attention Amber (`--bar-warning`).
+  * **85% – 100% (Critical)**: Danger Red (`--bar-critical`) to warn of resource exhaustion.
+* **System Buffers & Caches (`Buffered`, `Cached`)**:
+  * Normal reclaimable system memory (`--bar-normal`, Sky Cyan `linear-gradient(90deg, #0284c7, #38bdf8)`).
 
 ---
 
