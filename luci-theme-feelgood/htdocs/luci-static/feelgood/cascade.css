@@ -527,9 +527,9 @@ table, .table {
 
 table > tbody > tr > td, table > tbody > tr > th, table > tfoot > tr > td, table > tfoot > tr > th, table > thead > tr > td, table > thead > tr > th,
 .table > .tbody > .tr > .td, .table > .tbody > .tr > .th, .table > .tfoot > .tr > .td, .table > .tfoot > .tr > .th, .table > .thead > .tr > .td, .table > .thead > .tr > .th {
-    padding: .5rem;
-    border-top: 1px solid #ddd;
-    white-space: nowrap;
+    padding: 0.65rem 0.85rem;
+    border-top: 1px solid var(--border-color);
+    vertical-align: middle;
 }
 
 .cbi-section-table-cell {
@@ -639,28 +639,33 @@ td > table > tbody > tr > td,
 
 .btn, .cbi-button {
     -webkit-appearance: none;
-    color: rgba(0, 0, 0, 0.87);
-    background-color: #F0F0F0;
-    transition: all 0.2s ease-in-out;
-    display: inline-block;
-    padding: 0 0.8rem;
-    border: none;
-    border-radius: 20px;
+    color: var(--text-heading);
+    background-color: var(--bg-row-even);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    height: 34px;
+    line-height: normal;
+    padding: 0 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     cursor: pointer;
-    -ms-touch-action: manipulation;
     touch-action: manipulation;
-    background-image: none;
-    text-align: center;
-    vertical-align: middle;
+    font-size: 0.84rem;
+    font-weight: 600;
     white-space: nowrap;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
-    font-size: 0.8rem;
-    width: auto;
-    display: inline-block;
     text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.btn:hover, .cbi-button:hover {
+    background-color: var(--bg-row-hover);
+    border-color: var(--accent-color);
+    color: var(--text-heading);
+    transform: translateY(-1px);
 }
 
 .btn:disabled,
@@ -743,32 +748,60 @@ td > table > tbody > tr > td,
 
 /* table */
 
-.cbi-tabmenu {
-    border: 1px solid #D4D4D4;
-    border-bottom: none;
-    border-radius: 10px 10px 0 0;
-    background-color: #D4D4D4;
+.cbi-tabmenu,
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    border-bottom: 2px solid var(--border-color);
+    background-color: transparent;
+    padding: 0 0.5rem;
+    margin-bottom: 0;
+    list-style: none;
 }
 
-.cbi-tabmenu li {
-    display: inline-block;
-    padding: .5rem .8rem;
+.cbi-tabmenu li,
+.tabs li {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1rem;
     border-radius: 10px 10px 0 0;
+    margin-bottom: -2px;
+    border: 1px solid transparent;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .cbi-tabmenu li.cbi-tab,
-.cbi-tabmenu li.cbi-tab:hover {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-bottom: none;
+.tabs li.active {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-bottom: 2px solid var(--accent-color) !important;
+}
+
+.cbi-tabmenu li.cbi-tab a,
+.tabs li.active a {
+    color: var(--accent-color) !important;
+    font-weight: 700;
+}
+
+.cbi-tabmenu li.cbi-tab-disabled,
+.tabs li:not(.active) {
+    background-color: transparent;
+    color: var(--text-muted);
 }
 
 .cbi-tabmenu li:hover {
-    background-color: var(--bg-row-hover);
+    background-color: var(--nav-hover-bg);
 }
 
-.cbi-tabmenu li a {
-    color: var(--text-color);
+.cbi-tabmenu li a,
+.tabs li a {
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
 }
 
 .cbi-tabmenu + div,
@@ -784,13 +817,6 @@ td > table > tbody > tr > td,
 .cbi-tabmenu + form .cbi-section {
     margin-top: 0;
     border-radius: 0 0 10px 10px !important;
-}
-
-.tabs {
-    border-radius: 20px;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    margin-top: 1rem;
 }
 
 .tabs > li {
@@ -871,18 +897,33 @@ td > table > tbody > tr > td,
 
 .cbi-value-title {
     word-wrap: break-word;
-    padding-top: 0.6rem;
-    width: 23rem;
-    float: left;
-    text-align: right;
-    padding-right: 2rem;
-    display: table-cell;
+    flex: 0 0 240px;
+    min-width: 200px;
+    max-width: 280px;
+    text-align: left;
+    padding-right: 1.5rem;
+    padding-top: 0.35rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-heading);
 }
 
 .cbi-value {
-    padding: 0.3rem 1rem;
-    display: inline-block;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
     width: 100%;
+    box-sizing: border-box;
+}
+
+.cbi-value:last-child {
+    border-bottom: none;
+}
+
+.cbi-value-field {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .cbi-section-table-descr > .cbi-section-table-cell {
@@ -1170,7 +1211,14 @@ td > table > tbody > tr > td,
 }
 
 .cbi-page-actions {
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 1.25rem 0 0.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
 }
 
 /* input */
@@ -1225,38 +1273,77 @@ td > .ifacebadge,
 .network-status-table {
     display: flex;
     flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 1.5rem;
 }
 
 .network-status-table .ifacebox {
-    margin: .5em;
-    flex-grow: 1;
+    margin: 0;
+    flex: 1 1 340px;
+    min-width: 300px;
+    max-width: 100%;
+    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    overflow: hidden;
 }
 
 .network-status-table .ifacebox-body {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
 }
 
-.network-status-table .ifacebox-body > span {
-    flex: 10 10;
+/* Symmetrical Key-Value Rows (Address, Gateway, DNS) */
+.ifacebox-body > span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.ifacebox-body > span > br,
+.network-status-table .ifacebox-body > span > br {
+    display: none !important;
+}
+
+.ifacebox-body .nowrap {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.ifacebox-body .nowrap > strong:first-child {
+    flex: 0 0 115px !important;
+    min-width: 115px !important;
+    max-width: 115px !important;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-align: left;
+    display: inline-block;
+    user-select: none;
 }
 
 .network-status-table .ifacebox-body > div {
     display: flex;
     flex-wrap: wrap;
+    margin-top: 0.25rem;
 }
 
 .network-status-table .ifacebox-body .ifacebadge {
-    flex: 1 1 auto;
-    margin: .5em .25em 0 .25em;
-    padding: .5em;
-    min-width: 220px;
+    flex: 0 1 auto;
+    margin: 0.25rem 0;
+    padding: 0.4rem 0.75rem;
     background-color: var(--bg-row-even);
     border: 1px solid var(--border-color);
     align-items: center;
-    border-radius: 14px;
+    border-radius: 10px;
     color: var(--text-heading);
+    font-size: 0.85rem;
 }
 
 /*textarea*/
@@ -3510,22 +3597,32 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
    4. THEME & NAVIGATION TOGGLE CONTROLS
    -------------------------------------------------------------------------- */
 
+.btn-con {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+}
+
 .theme-toggle-btn {
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.08);
     color: var(--text-heading) !important;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 0.35rem 0.85rem;
-    border-radius: 20px;
-    margin-right: 6px;
+    height: 32px;
+    padding: 0 0.85rem;
+    border-radius: 16px;
+    margin: 0;
     user-select: none;
     transition: all 0.2s ease;
     border: 1px solid var(--border-color);
     font-size: 0.82rem;
     font-weight: 600;
     line-height: normal;
+    box-sizing: border-box;
 }
 
 .theme-toggle-btn:hover {
@@ -3550,15 +3647,26 @@ html[data-theme-color="light"] .theme-toggle-btn:hover {
 }
 
 /* Logout Button */
+.label.logout {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+}
+
 .label.logout a {
     color: #ffffff !important;
     background-color: #ef4444;
-    padding: 0.35rem 0.85rem;
-    border-radius: 20px;
+    height: 32px;
+    padding: 0 0.85rem;
+    border-radius: 16px;
     font-size: 0.82rem;
     font-weight: 600;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s ease;
+    box-sizing: border-box;
+    text-decoration: none;
 }
 
 .label.logout a:hover {
@@ -3790,5 +3898,107 @@ html[data-theme-color="light"] .badge-status-bad {
     color: #dc2626;
     background-color: rgba(244, 63, 94, 0.14);
     border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   6. PORT STATUS SYMMETRY & DEDICATED PORT CARDS
+   -------------------------------------------------------------------------- */
+
+div[style*="grid-template-columns"]:has(.ifacebox),
+.port-status-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 14px !important;
+    margin-bottom: 1.25rem !important;
+    align-items: stretch !important;
+}
+
+div[style*="grid-template-columns"] > .ifacebox,
+.port-card {
+    width: 145px !important;
+    min-width: 135px !important;
+    max-width: 160px !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 2px 8px var(--shadow-color) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+div[style*="grid-template-columns"] > .ifacebox:hover,
+.port-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 4px 16px var(--shadow-color) !important;
+}
+
+div[style*="grid-template-columns"] > .ifacebox > .ifacebox-head:first-child,
+.port-card-head {
+    padding: 0.5rem 0.6rem !important;
+    background: var(--bg-card-header) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-heading) !important;
+    text-align: center;
+}
+
+.port-card-main {
+    padding: 0.75rem 0.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: 80px !important;
+    background: var(--bg-card) !important;
+}
+
+.port-icon-usb-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px 0;
+    transition: transform 0.2s ease;
+}
+
+.port-card:hover .port-icon-usb-wrapper {
+    transform: scale(1.05);
+}
+
+.badge-port-status {
+    font-size: 0.75rem !important;
+    padding: 0.15rem 0.6rem !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+
+.port-card-stats {
+    padding: 0.45rem 0.5rem !important;
+    background: var(--bg-row-odd) !important;
+    border-top: 1px solid var(--border-color) !important;
+    margin-top: auto;
+}
+
+.port-stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+}
+
+.port-stats-grid .badge-traffic {
+    justify-content: center;
+    font-size: 0.74rem !important;
+    padding: 0.12rem 0.35rem !important;
+    margin: 0 !important;
 }
 

@@ -147,7 +147,11 @@ const Colorizer = {
 	},
 
 	colorizeElements() {
-		const cells = document.querySelectorAll('#maincontent td, #maincontent .td, #maincontent .ifacebox-body, #maincontent .cbi-value-field');
+		// 1. Process specialized Port Status boxes first (overview page)
+		this.processPortBoxes();
+
+		// 2. Process general table cells, field values, and key-value entries
+		const cells = document.querySelectorAll('#maincontent td, #maincontent .td, #maincontent .cbi-value-field, #maincontent .ifacebox-body .nowrap');
 		for (let i = 0; i < cells.length; i++) {
 			const cell = cells[i];
 
@@ -161,6 +165,107 @@ const Colorizer = {
 
 			this.processCell(cell);
 		}
+	},
+
+	/**
+	 * Dedicated Port Status Box symmetry & USB Ethernet styling
+	 */
+	processPortBoxes() {
+		const portBoxes = document.querySelectorAll('div[style*="grid-template-columns"] > .ifacebox, .port-status-box');
+		if (!portBoxes.length) return;
+
+		// Ensure parent container has symmetrical flex layout
+		portBoxes.forEach((box) => {
+			const parent = box.parentElement;
+			if (parent && !parent.classList.contains('port-status-container')) {
+				parent.classList.add('port-status-container');
+			}
+
+			box.classList.add('port-card');
+
+			// 1. Port Header (e.g. "usb0")
+			const head = box.querySelector('.ifacebox-head');
+			let portName = '';
+			if (head) {
+				portName = head.textContent.trim().toLowerCase();
+				if (!head.classList.contains('port-card-head')) {
+					head.classList.add('port-card-head');
+					head.innerHTML = `<span class="port-name">${portName.toUpperCase()}</span>`;
+				}
+			}
+
+			// 2. Port Icon & Link State
+			const bodies = box.querySelectorAll('.ifacebox-body');
+			if (bodies.length >= 1) {
+				const body1 = bodies[0];
+				if (!body1.classList.contains('port-card-main')) {
+					body1.classList.add('port-card-main');
+
+					const img = body1.querySelector('img');
+					const isUsb = portName.startsWith('usb');
+					const text = body1.textContent.trim();
+					const isConnected = /Connected|GbE|M\(|M\b|\d+\s*M/i.test(text);
+
+					// Replace generic RJ-45 icon with dedicated USB Ethernet SVG if usb port
+					if (isUsb && !body1.querySelector('.port-icon-usb')) {
+						if (img) img.style.display = 'none';
+						const usbColor = isConnected ? '#38bdf8' : '#64748b';
+						const statusDot = isConnected ? '#34d399' : '#f43f5e';
+						const svgHtml = `
+							<div class="port-icon-usb-wrapper" title="USB Ethernet (${portName})">
+								<svg class="port-icon-usb" viewBox="0 0 40 40" width="36" height="36" fill="none">
+									<rect x="4" y="4" width="32" height="32" rx="8" fill="rgba(56, 189, 248, 0.12)" stroke="${usbColor}" stroke-width="1.8"/>
+									<path d="M20 10v16M20 10l-2.5 3.5h5L20 10zM20 18l-4 3v3a1.5 1.5 0 1 0 1.5 0v-2l2.5-2M20 20l4 2.5v2a1.5 1.5 0 1 1-1.5 0v-1.2l-2.5-1.8" stroke="${usbColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+									<circle cx="16" cy="25" r="1.4" fill="${usbColor}"/>
+									<rect x="22.5" y="23.5" width="2.8" height="2.8" fill="${usbColor}"/>
+									<circle cx="31" cy="9" r="2.8" fill="${statusDot}"/>
+								</svg>
+							</div>`;
+						body1.insertAdjacentHTML('afterbegin', svgHtml);
+					}
+
+					// Format speed / status badge cleanly under the icon
+					if (!body1.querySelector('.badge-port-status')) {
+						let statusBadge = '';
+						if (isConnected) {
+							statusBadge = `<span class="badge-colored badge-status-good badge-port-status">${text || 'Connected'}</span>`;
+						} else {
+							statusBadge = `<span class="badge-colored badge-status-bad badge-port-status">No Link</span>`;
+						}
+						// Remove raw text nodes while preserving our elements
+						Array.from(body1.childNodes).forEach(node => {
+							if (node.nodeType === Node.TEXT_NODE || node.nodeName === 'BR') node.remove();
+						});
+						body1.insertAdjacentHTML('beforeend', statusBadge);
+					}
+				}
+			}
+
+			// 3. Port Traffic Stats (TX & RX)
+			if (bodies.length >= 2) {
+				const body2 = bodies[1];
+				if (!body2.classList.contains('port-card-stats')) {
+					body2.classList.add('port-card-stats');
+					const text = body2.textContent;
+					const txMatch = text.match(/▲\s*([0-9.]+\s*[KMGT]?B)/i);
+					const rxMatch = text.match(/▼\s*([0-9.]+\s*[KMGT]?B)/i);
+
+					if (txMatch || rxMatch) {
+						const txVal = txMatch ? txMatch[1] : '0 B';
+						const rxVal = rxMatch ? rxMatch[1] : '0 B';
+						const tooltip = body2.querySelector('.cbi-tooltip');
+						const tooltipHtml = tooltip ? tooltip.outerHTML : '';
+
+						body2.innerHTML = `
+							<div class="port-stats-grid">
+								<span class="badge-colored badge-traffic badge-tx" title="Upload (TX)"><span class="traffic-icon">▲</span> ${txVal}</span>
+								<span class="badge-colored badge-traffic badge-rx" title="Download (RX)"><span class="traffic-icon">▼</span> ${rxVal}</span>
+							</div>
+							${tooltipHtml}`;
+					}
+				}
+			}
+		});
 	},
 
 	processCell(cell) {

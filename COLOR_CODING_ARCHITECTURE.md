@@ -98,7 +98,30 @@ Hardware thermal telemetry is automatically retrieved via standard Linux `sysfs`
 
 ---
 
-## 3. How It Is Implemented
+## 3. Global Visual Symmetry & Component System
+
+To ensure a balanced layout across all LuCI views, the theme enforces a unified geometric grid:
+
+### A. Network & Upstream Key-Value Columns
+* **Fixed Label Anchor (`115px`)**: Labels (`Address:`, `Gateway:`, `DNS:`, `Protocol:`, `Connected:`) are locked to `flex: 0 0 115px; min-width: 115px;`.
+* **Zero Ragged Wrapping**: `<br>` tags between entries are eliminated; each entry is rendered as a clean flex row (`.ifacebox-body .nowrap`).
+* **Column Alignment**: All values and IP badges (`🌐 10.162.21.205/24`, `🌐 10.162.21.74`) begin at the exact same horizontal position.
+
+### B. Port Status Cards & Dedicated USB Ethernet Support
+* **Proportional Port Cards (`.port-card`)**: Single and multi-port interfaces render as compact `140px` cards in a flexible row (`.port-status-container`), eliminating stretched 1fr grid cells.
+* **Dedicated USB Ethernet Symbol**: USB network devices (`usb0`, `usb1`) receive a specialized USB Ethernet SVG with link-state detection.
+* **Symmetrical Traffic Grid**: Port statistics (`▲ TX` and `▼ RX`) are displayed as balanced twin badges in the bottom section.
+
+### C. CBI Form Values & Input Elements
+* **Two-Column Form Grid**: `.cbi-value` forms use a flexbox layout where `.cbi-value-title` occupies `240px` with left alignment and semi-bold typography, separated by subtle borders (`1px solid var(--border-color)`).
+* **Uniform Control Heights**: All text inputs, password fields, select boxes, dropdowns (`.cbi-dropdown`), and action buttons (`.btn`, `.cbi-button`) are normalized to `34px – 36px` height with matching `8px` rounded corners.
+* **Top Header Controls**: Navigation toggle (`[ ⬌ Horizontal ]`), theme toggle (`[ 🌙 Dark ]`), and logout button are aligned inside `.btn-con` with uniform `32px` height, `16px` pill radius, and `8px` spacing.
+* **Table Rows & Cells**: Table cells across status and configuration pages feature uniform `0.65rem 0.85rem` padding with centered vertical alignment (`vertical-align: middle;`).
+* **CBI Tabs & Navigation**: `.cbi-tabmenu` and `.tabs` use a flex tab bar with active accent indicators (`border-bottom: 2px solid var(--accent-color)`).
+
+---
+
+## 4. How It Is Implemented
 
 The architecture consists of three synchronized layers:
 
