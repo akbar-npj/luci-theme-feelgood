@@ -1835,31 +1835,13 @@ body.login .container {
     }
 }
 
-/* Login card typography: High-contrast, sharp & non-fading */
+/* Hide "Authorization Required" and description on login screen */
 body.login .main-right h2,
 body.login h2[name="content"],
-body.login h2 {
-    color: #ffffff !important;
-    font-size: 1.65rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.015em !important;
-    border: none !important;
-    margin: 0 0 0.4rem !important;
-    padding: 0 !important;
-    text-align: left !important;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.95) !important;
-}
-
+body.login h2,
 body.login .main-right .cbi-map-descr,
 body.login .cbi-map-descr {
-    color: #f8fafc !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    line-height: 1.5 !important;
-    margin-bottom: 1.5rem !important;
-    padding: 0 !important;
-    text-align: left !important;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.95) !important;
+    display: none !important;
 }
 
 /* Container & form structure transparency inside card */

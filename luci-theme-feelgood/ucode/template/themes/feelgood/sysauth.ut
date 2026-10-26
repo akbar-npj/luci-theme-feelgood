@@ -20,10 +20,6 @@
 	{% endif %}
 
 	<div class="cbi-map">
-		<h2 name="content">{{ _('Authorization Required') }}</h2>
-		<div class="cbi-map-descr">
-			{{ _('Please enter your username and password.') }}
-		</div>
 		<div class="cbi-section"><div class="cbi-section-node">
 			<div class="cbi-value">
 				<label class="cbi-value-title">{{ _('Username') }}</label>
