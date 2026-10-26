@@ -681,24 +681,69 @@ const Colorizer = {
 		const rawText = cell.textContent.trim();
 		if (!rawText) return;
 
-		let html = cell.innerHTML;
+		// Never modify cells containing interactive input controls
+		if (cell.querySelector('input, select, textarea, button, form, .cbi-dropdown'))
+			return;
+
+		const prevText = cell.previousElementSibling ? (cell.previousElementSibling.textContent || '') : '';
+		const labelText = cell.closest ? (cell.closest('.cbi-value')?.querySelector('.cbi-value-title')?.textContent || '') : '';
+		const cellId = cell.id || '';
+
+		const context = {
+			rawText: rawText,
+			isNoise: /Noise/i.test(rawText) || /Noise/i.test(prevText) || /Noise/i.test(labelText) || /noise/i.test(cellId),
+			isTxPower: /(?:TX[\s-]*Power|txpower|Current\s*power)/i.test(rawText) ||
+			           /(?:TX[\s-]*Power|txpower)/i.test(prevText) ||
+			           /(?:TX[\s-]*Power|txpower)/i.test(labelText) ||
+			           /(?:txpower|tx_power)/i.test(cellId)
+		};
+
+		// Traverse ONLY text nodes so HTML attributes (title, data-signal, etc.) are NEVER matched or corrupted
+		const walker = document.createTreeWalker(
+			cell,
+			NodeFilter.SHOW_TEXT,
+			{
+				acceptNode: function(n) {
+					if (!n.nodeValue || !n.nodeValue.trim())
+						return NodeFilter.FILTER_REJECT;
+					if (n.parentElement && n.parentElement.closest('.badge-colored, script, style, .port-icon-usb-wrapper, input, select, textarea, button'))
+						return NodeFilter.FILTER_REJECT;
+					return NodeFilter.FILTER_ACCEPT;
+				}
+			}
+		);
+
+		const textNodes = [];
+		let curr;
+		while ((curr = walker.nextNode())) {
+			textNodes.push(curr);
+		}
+
 		let modified = false;
+		for (let i = 0; i < textNodes.length; i++) {
+			const node = textNodes[i];
+			const transformed = this.transformText(node.nodeValue, context);
+			if (transformed !== null) {
+				const fragment = document.createRange().createContextualFragment(transformed);
+				node.parentNode.replaceChild(fragment, node);
+				modified = true;
+			}
+		}
+
+		if (modified) {
+			cell.dataset.colorizedText = cell.textContent;
+		}
+	},
+
+	transformText(text, context) {
+		let modified = false;
+		let result = text;
 
 		// 1. RF Metrics: TX Power, Noise Floor, and WiFi Signal (dBm)
-		if (/-?\d+(?:\.\d+)?\s*dBm/i.test(html) && !cell.querySelector('.badge-signal, .badge-noise, .badge-tx-power')) {
-			const prevText = cell.previousElementSibling ? (cell.previousElementSibling.textContent || '') : '';
-			const labelText = cell.closest ? (cell.closest('.cbi-value')?.querySelector('.cbi-value-title')?.textContent || '') : '';
-			const cellId = cell.id || '';
-
-			const isNoise = /Noise/i.test(rawText) || /Noise/i.test(prevText) || /Noise/i.test(labelText) || /noise/i.test(cellId);
-			const isTxPower = /(?:TX[\s-]*Power|txpower|Current\s*power)/i.test(rawText) ||
-			                  /(?:TX[\s-]*Power|txpower)/i.test(prevText) ||
-			                  /(?:TX[\s-]*Power|txpower)/i.test(labelText) ||
-			                  /(?:txpower|tx_power)/i.test(cellId);
-
+		if (/-?\d+(?:\.\d+)?\s*dBm/i.test(result)) {
 			// A. Compound Signal / Noise (e.g. "-54/-95 dBm" or "-54 / -95 dBm" or "---/-95 dBm")
-			if (/(-?\d+(?:\.\d+)?|---)\s*\/\s*(-?\d+(?:\.\d+)?)\s*dBm/i.test(html)) {
-				html = html.replace(/(-?\d+(?:\.\d+)?|---)\s*\/\s*(-?\d+(?:\.\d+)?)\s*dBm/gi, (match, sSig, sNoise) => {
+			if (/(-?\d+(?:\.\d+)?|---)\s*\/\s*(-?\d+(?:\.\d+)?)\s*dBm/i.test(result)) {
+				result = result.replace(/(-?\d+(?:\.\d+)?|---)\s*\/\s*(-?\d+(?:\.\d+)?)\s*dBm/gi, (match, sSig, sNoise) => {
 					let sigHtml;
 					if (sSig !== '---') {
 						const fSig = parseFloat(sSig);
@@ -719,22 +764,22 @@ const Colorizer = {
 				modified = true;
 			}
 			// B. Radio Transmitter Output Power (e.g. "TX Power: 25.00 dBm" or "25 dBm")
-			else if (isTxPower) {
-				html = html.replace(/(\d+(?:\.\d+)?)\s*dBm/gi, (match) => {
+			else if (context.isTxPower) {
+				result = result.replace(/(\d+(?:\.\d+)?)\s*dBm/gi, (match) => {
 					return `<span class="badge-colored badge-tx-power"><span class="tx-pwr-icon">⚡</span> ${match}</span>`;
 				});
 				modified = true;
 			}
 			// C. Dedicated RF Noise Floor (e.g. "Noise: -71.00 dBm" or "-95 dBm")
-			else if (isNoise) {
-				html = html.replace(/(-?\d+(?:\.\d+)?)\s*dBm/gi, (match) => {
+			else if (context.isNoise) {
+				result = result.replace(/(-?\d+(?:\.\d+)?)\s*dBm/gi, (match) => {
 					return `<span class="badge-colored badge-noise"><span class="noise-icon">🔇</span> ${match}</span>`;
 				});
 				modified = true;
 			}
 			// D. Client Reception Signal (RSSI) (e.g. "Signal: -54 dBm" or "-65 dBm")
 			else {
-				html = html.replace(/(-?\d+(?:\.\d+)?)\s*dBm/gi, (match, valStr) => {
+				result = result.replace(/(-?\d+(?:\.\d+)?)\s*dBm/gi, (match, valStr) => {
 					const fVal = parseFloat(valStr);
 					const val = Math.abs(fVal);
 					let q = 'poor';
@@ -750,8 +795,8 @@ const Colorizer = {
 		}
 
 		// 2. Data Rates (e.g. "866.7 Mbit/s", "1.2 Gbit/s", "54 Mbit/s")
-		if (/\b\d+(?:\.\d+)?\s*(?:Gbit\/s|Mbit\/s|Kbit\/s|Gbps|Mbps|Kbps)\b/i.test(html) && !cell.querySelector('.badge-rate')) {
-			html = html.replace(/(\d+(?:\.\d+)?)\s*(Gbit\/s|Mbit\/s|Kbit\/s|Gbps|Mbps|Kbps)/gi, (match, numStr, unit) => {
+		if (/\b\d+(?:\.\d+)?\s*(?:Gbit\/s|Mbit\/s|Kbit\/s|Gbps|Mbps|Kbps)\b/i.test(result)) {
+			result = result.replace(/(\d+(?:\.\d+)?)\s*(Gbit\/s|Mbit\/s|Kbit\/s|Gbps|Mbps|Kbps)/gi, (match, numStr, unit) => {
 				let num = parseFloat(numStr);
 				const u = unit.toLowerCase();
 				if (u.startsWith('g')) num *= 1000;
@@ -768,16 +813,16 @@ const Colorizer = {
 		}
 
 		// 3. Traffic direction indicators (▲ TX and ▼ RX)
-		if ((html.includes('▲') || html.includes('▼')) && !cell.querySelector('.badge-traffic')) {
-			html = html
+		if (result.includes('▲') || result.includes('▼')) {
+			result = result
 				.replace(/▲\s*([^<,\n\r]+)/g, '<span class="badge-colored badge-traffic badge-tx"><span class="traffic-icon">▲</span> $1</span>')
 				.replace(/▼\s*([^<,\n\r]+)/g, '<span class="badge-colored badge-traffic badge-rx"><span class="traffic-icon">▼</span> $1</span>');
 			modified = true;
 		}
 
 		// 4. WiFi Frequency Bands (e.g. "5.180 GHz" or "2.437 GHz" or "6 GHz")
-		if (/\b\d+(?:\.\d+)?\s*GHz\b/i.test(html) && !cell.querySelector('.badge-band')) {
-			html = html.replace(/(\d+(?:\.\d+)?)\s*GHz/gi, (match, freqStr) => {
+		if (/\b\d+(?:\.\d+)?\s*GHz\b/i.test(result)) {
+			result = result.replace(/(\d+(?:\.\d+)?)\s*GHz/gi, (match, freqStr) => {
 				const freq = parseFloat(freqStr);
 				let band = '2g';
 				if (freq >= 5.9) band = '6g';
@@ -789,8 +834,8 @@ const Colorizer = {
 		}
 
 		// 5. Port Link Speeds (e.g. "1000baseT/Full", "100baseT/Full", "no link")
-		if (/(?:1000base|2500base|100base|10gbase|no link)/i.test(html) && !cell.querySelector('.badge-link')) {
-			html = html.replace(/\b([0-9]+base[A-Za-z0-9\/]+|no link)\b/gi, (match) => {
+		if (/(?:1000base|2500base|100base|10gbase|no link)/i.test(result)) {
+			result = result.replace(/\b([0-9]+base[A-Za-z0-9\/]+|no link)\b/gi, (match) => {
 				let tier = 'low';
 				if (/10000base|10gbase/i.test(match)) tier = 'gigabit';
 				else if (/2500base|2\.5g/i.test(match)) tier = 'gigabit';
@@ -804,17 +849,17 @@ const Colorizer = {
 		}
 
 		// 6. Uptime stability tag
-		if (/^\s*\d+d\s+\d+h/i.test(rawText) && !cell.querySelector('.badge-uptime')) {
-			html = `<span class="badge-colored badge-uptime" data-uptime="stable">${html}</span>`;
+		if (/^\s*\d+d\s+\d+h/i.test(result)) {
+			result = `<span class="badge-colored badge-uptime" data-uptime="stable">${result}</span>`;
 			modified = true;
-		} else if (/^\s*(?:[0-5]?[0-9]m|[0-5]?[0-9]s)/i.test(rawText) && !/\d+h|\d+d/i.test(rawText) && !cell.querySelector('.badge-uptime') && rawText.length < 15) {
-			html = `<span class="badge-colored badge-uptime" data-uptime="recent">${html}</span>`;
+		} else if (/^\s*(?:[0-5]?[0-9]m|[0-5]?[0-9]s)/i.test(result) && !/\d+h|\d+d/i.test(result) && result.length < 15) {
+			result = `<span class="badge-colored badge-uptime" data-uptime="recent">${result}</span>`;
 			modified = true;
 		}
 
 		// 7. System Thermal / Temperature (e.g. "48.5 °C", "52°C", "110°F")
-		if (/\b\d+(?:\.\d+)?\s*(?:°C|℃|°F|℉)\b/i.test(html) && !cell.querySelector('.badge-thermal')) {
-			html = html.replace(/(\d+(?:\.\d+)?)\s*(°C|℃|°F|℉)/gi, (match, valStr, unit) => {
+		if (/\b\d+(?:\.\d+)?\s*(?:°C|℃|°F|℉)\b/i.test(result)) {
+			result = result.replace(/(\d+(?:\.\d+)?)\s*(°C|℃|°F|℉)/gi, (match, valStr, unit) => {
 				let tempC = parseFloat(valStr);
 				if (unit.includes('F') || unit.includes('℉'))
 					tempC = (tempC - 32) * 5 / 9;
@@ -831,37 +876,35 @@ const Colorizer = {
 		}
 
 		// 8. IP Addresses (e.g. "192.168.8.1" or "10.0.0.1/24")
-		if (/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?\b/.test(html) && !cell.querySelector('.badge-ip')) {
-			html = html.replace(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?\b/g, (match) => {
+		if (/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?\b/.test(result)) {
+			result = result.replace(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?\b/g, (match) => {
 				return `<span class="badge-colored badge-ip"><span class="ip-icon">🌐</span> ${match}</span>`;
 			});
 			modified = true;
 		}
 
 		// 9. MAC Addresses (e.g. "00:1A:2B:3C:4D:5E")
-		if (/\b(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})\b/.test(html) && !cell.querySelector('.badge-mac')) {
-			html = html.replace(/\b(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})\b/g, (match) => {
+		if (/\b(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})\b/.test(result)) {
+			result = result.replace(/\b(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})\b/g, (match) => {
 				return `<span class="badge-colored badge-mac"><span class="mac-icon">🏷️</span> ${match}</span>`;
 			});
 			modified = true;
 		}
 
-		// 10. Operational Status Keywords (Only when exact short cell or tagged)
-		if (/^(?:Connected|Associated|Running|Up|Online)$/i.test(rawText) && !cell.querySelector('.badge-status-good')) {
-			html = `<span class="badge-colored badge-status-good">${rawText}</span>`;
+		// 10. Operational Status Keywords (Only when exact short text)
+		const trimmed = result.trim();
+		if (/^(?:Connected|Associated|Running|Up|Online)$/i.test(trimmed)) {
+			result = `<span class="badge-colored badge-status-good">${trimmed}</span>`;
 			modified = true;
-		} else if (/^(?:Disabled|Stopped|Down|Disconnected|Offline)$/i.test(rawText) && !cell.querySelector('.badge-status-bad')) {
-			html = `<span class="badge-colored badge-status-bad">${rawText}</span>`;
+		} else if (/^(?:Disabled|Stopped|Down|Disconnected|Offline)$/i.test(trimmed)) {
+			result = `<span class="badge-colored badge-status-bad">${trimmed}</span>`;
 			modified = true;
-		} else if (/^(?:Restarting|Pending|Reloading)$/i.test(rawText) && !cell.querySelector('.badge-status-warn')) {
-			html = `<span class="badge-colored badge-status-warn">${rawText}</span>`;
+		} else if (/^(?:Restarting|Pending|Reloading)$/i.test(trimmed)) {
+			result = `<span class="badge-colored badge-status-warn">${trimmed}</span>`;
 			modified = true;
 		}
 
-		if (modified) {
-			cell.innerHTML = html;
-			cell.dataset.colorizedText = cell.textContent;
-		}
+		return modified ? result : null;
 	}
 };
 
