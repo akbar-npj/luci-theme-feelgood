@@ -1756,26 +1756,35 @@ body.login .main {
     min-height: 100vh !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
 }
 
 body.login .main-right {
     width: 100% !important;
-    padding: 2.5rem 1rem !important;
+    min-height: 100vh !important;
+    padding: 2rem 2rem 2rem 8% !important;
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: flex-start !important;
     justify-content: center !important;
+    box-sizing: border-box !important;
 }
 
 body.login #maincontent {
     width: 100% !important;
+    max-width: 380px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     text-align: center !important;
 }
 
-/* Brand logo & Hostname header - moved close toward the login box */
+/* Brand logo & Hostname header - sitting directly above left login box */
 body.login .logoImg {
-    margin-bottom: 0.4rem !important;
+    width: 100% !important;
+    margin: 0 0 0.45rem 0 !important;
+    padding: 0 !important;
     text-align: center !important;
 }
 
@@ -1783,14 +1792,14 @@ body.login .logoImg img.brand-logo,
 body.login .logoImg img.mobile-hide,
 body.login .logoImg img.login-icon,
 body.login .logoImg img {
-    max-height: 72px !important;
-    width: 72px !important;
+    max-height: 68px !important;
+    width: 68px !important;
     border-radius: 50% !important;
     display: inline-block !important;
     filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.75)) !important;
     transition: transform 0.2s ease !important;
     object-fit: cover !important;
-    margin-bottom: 0.15rem !important;
+    margin: 0 0 0.15rem 0 !important;
 }
 
 body.login .logoImg img:hover {
@@ -1799,16 +1808,17 @@ body.login .logoImg img:hover {
 
 body.login .logoImg .brand {
     display: block !important;
-    padding: 0.2rem 0 0 !important;
-    font-size: 1.45rem !important;
+    padding: 0 !important;
+    font-size: 1.35rem !important;
     font-weight: 700 !important;
     color: #ffffff !important;
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.95) !important;
     letter-spacing: 0.02em !important;
-    margin: 0 0 0.5rem 0 !important;
+    margin: 0 0 0.45rem 0 !important;
+    line-height: 1.2 !important;
 }
 
-/* 100% Transparent login card - card background completely invisible, wallpaper unobstructed */
+/* 100% Transparent login card - left aligned */
 body.login > .main .container,
 body.login .container {
     background: transparent !important;
@@ -1817,23 +1827,28 @@ body.login .container {
     -webkit-backdrop-filter: none !important;
     border: none !important;
     border-radius: 0 !important;
-    padding: 0 1rem !important;
+    padding: 0 !important;
     box-shadow: none !important;
     width: 100% !important;
-    max-width: 420px !important;
-    min-width: 300px !important;
-    margin: 0 auto !important;
+    max-width: 380px !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
     text-align: left !important;
 }
 
-@media screen and (max-width: 540px) {
+@media screen and (max-width: 600px) {
+    body.login .main {
+        justify-content: center !important;
+    }
+    body.login .main-right {
+        padding: 1.5rem 1rem !important;
+        align-items: center !important;
+    }
+    body.login #maincontent,
     body.login > .main .container,
     body.login .container {
-        padding: 0 0.5rem !important;
-        border: none !important;
-        box-shadow: none !important;
-        max-width: 92% !important;
+        max-width: 90% !important;
+        margin: 0 auto !important;
     }
 }
 
@@ -2045,8 +2060,10 @@ html[data-theme-color="dark"] body.login .cbi-page-actions,
 :root body.login .cbi-page-actions,
 body.login .cbi-page-actions {
     display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0 !important;
     width: 100% !important;
-    margin-top: 1.5rem !important;
+    margin-top: 1.25rem !important;
     padding: 0 !important;
     border: none !important;
     background: transparent !important;
@@ -4699,12 +4716,22 @@ body.login .cbi-page-actions input.cbi-button-reset {
     box-shadow: 0 0 14px rgba(153, 27, 27, 0.5), 0 0 3px rgba(220, 38, 38, 0.75), inset 0 0 8px rgba(153, 27, 27, 0.2) !important;
 }
 
-/* Move login icon & brand header close to the login box */
+/* Left-aligned login boxes with brand header directly above */
 body.login .logoImg {
-    margin-bottom: 0.4rem !important;
+    width: 100% !important;
+    margin: 0 0 0.45rem 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
 }
+
 body.login .logoImg .brand {
-    margin-bottom: 0.5rem !important;
-    padding-top: 0.2rem !important;
+    margin: 0 0 0.45rem 0 !important;
+    padding: 0 !important;
+}
+
+body.login .cbi-page-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0 !important;
 }
 
