@@ -40,17 +40,21 @@
     line-height: normal;
     vertical-align: middle;
     text-align: center;
-    word-break:break-all;
-    word-wrap:break-word;
     display: table-cell;
     padding: .8em;
     border-bottom: 1px solid #eee;
 }
 
-
-
-.th {
+.th, th {
     font-weight: bold;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+}
+
+.td, td {
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .tr.placeholder {
@@ -2144,10 +2148,123 @@ body.login footer {
     white-space: normal;
 }
 
-/* fix status processes */
+/* ==========================================================================
+   Processes Table & General Table Column Alignment
+   ========================================================================== */
 
-.node-status-processes > .main .table .tr .td:nth-child(3) {
-    white-space: normal;
+/* Processes Page Table Layout */
+.node-status-processes .table,
+.node-status-processes table {
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+.node-status-processes .tr,
+.node-status-processes tr {
+    display: table-row !important;
+}
+
+.node-status-processes .th,
+.node-status-processes .td,
+.node-status-processes th,
+.node-status-processes td {
+    display: table-cell !important;
+    padding: 0.65rem 0.75rem !important;
+    vertical-align: middle !important;
+}
+
+.node-status-processes .th,
+.node-status-processes th {
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+}
+
+/* Column 1: PID */
+.node-status-processes .th:nth-child(1),
+.node-status-processes .td:nth-child(1),
+.node-status-processes th:nth-child(1),
+.node-status-processes td:nth-child(1) {
+    width: 80px !important;
+    min-width: 70px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+}
+
+/* Column 2: OWNER */
+.node-status-processes .th:nth-child(2),
+.node-status-processes .td:nth-child(2),
+.node-status-processes th:nth-child(2),
+.node-status-processes td:nth-child(2) {
+    width: 110px !important;
+    min-width: 90px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: center !important;
+}
+
+/* Column 3: COMMAND */
+.node-status-processes .th:nth-child(3),
+.node-status-processes th:nth-child(3) {
+    text-align: left !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+}
+
+.node-status-processes .td:nth-child(3),
+.node-status-processes td:nth-child(3) {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: left !important;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+}
+
+/* Column 4: %CPU */
+.node-status-processes .th:nth-child(4),
+.node-status-processes .td:nth-child(4),
+.node-status-processes th:nth-child(4),
+.node-status-processes td:nth-child(4) {
+    width: 90px !important;
+    min-width: 80px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: center !important;
+}
+
+/* Column 5: %MEM */
+.node-status-processes .th:nth-child(5),
+.node-status-processes .td:nth-child(5),
+.node-status-processes th:nth-child(5),
+.node-status-processes td:nth-child(5) {
+    width: 90px !important;
+    min-width: 80px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: center !important;
+}
+
+/* Column 6: ACTIONS (Hang Up / Terminate / Kill) */
+.node-status-processes .th:nth-child(6),
+.node-status-processes .td:nth-child(6),
+.node-status-processes th:nth-child(6),
+.node-status-processes td:nth-child(6) {
+    width: 250px !important;
+    min-width: 210px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    text-align: center !important;
+}
+
+.node-status-processes .td:nth-child(6) .btn,
+.node-status-processes td:nth-child(6) .btn,
+.node-status-processes .td:nth-child(6) input,
+.node-status-processes td:nth-child(6) input {
+    margin: 0 2px !important;
 }
 
 .node-status-iptables > .main div > .cbi-map > form {
@@ -3116,6 +3233,24 @@ html[data-theme-color="dark"] .cbi-section-table-titles .cbi-section-table-cell,
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    vertical-align: middle !important;
+}
+
+/* Universal table headers: prevent column titles from wrapping letters vertically */
+.table th,
+.table .th,
+table th,
+th,
+.cbi-section-table-titles th,
+.cbi-section-table-titles .th,
+.cbi-section-table-titles .cbi-section-table-cell,
+.th.cbi-section-table-cell {
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
 }
 
 /* Alternating Rows */
