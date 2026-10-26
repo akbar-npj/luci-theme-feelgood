@@ -1864,12 +1864,30 @@ body.login .darkMask {
     visibility: hidden !important;
 }
 
-/* Input rows & icons */
-body.login .cbi-value {
+/* Input rows & icons - zero borders/lines between root and password */
+body.login .cbi-value,
+body.login .cbi-value:first-child,
+body.login .cbi-value:last-child,
+body.login .cbi-value-last {
     padding: 0 !important;
     margin: 0 0 16px !important;
     display: block !important;
     background: transparent !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+}
+
+body.login .cbi-value::before,
+body.login .cbi-value::after,
+body.login .cbi-value-field::before,
+body.login .cbi-value-field::after {
+    display: none !important;
+    content: none !important;
+    border: none !important;
 }
 
 body.login .cbi-value-title {
@@ -1881,6 +1899,8 @@ body.login .cbi-value-field {
     position: relative !important;
     width: 100% !important;
     background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* High-contrast solid text inputs (ZERO fading) */
