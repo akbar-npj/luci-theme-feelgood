@@ -1755,24 +1755,24 @@ body.login .main {
     width: 100% !important;
     min-height: 100vh !important;
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-end !important;
     justify-content: flex-start !important;
 }
 
 body.login .main-right {
     width: 100% !important;
     min-height: 100vh !important;
-    padding: 2rem 2rem 2rem 8% !important;
+    padding: 2rem 2rem 2.5rem 2.5rem !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-start !important;
-    justify-content: center !important;
+    justify-content: flex-end !important;
     box-sizing: border-box !important;
 }
 
 body.login #maincontent {
     width: 100% !important;
-    max-width: 380px !important;
+    max-width: 360px !important;
     margin: 0 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -1818,7 +1818,7 @@ body.login .logoImg .brand {
     line-height: 1.2 !important;
 }
 
-/* 100% Transparent login card - left aligned */
+/* 100% Transparent login card - bottom-left corner */
 body.login > .main .container,
 body.login .container {
     background: transparent !important;
@@ -1830,7 +1830,7 @@ body.login .container {
     padding: 0 !important;
     box-shadow: none !important;
     width: 100% !important;
-    max-width: 380px !important;
+    max-width: 360px !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     text-align: left !important;
@@ -1838,11 +1838,13 @@ body.login .container {
 
 @media screen and (max-width: 600px) {
     body.login .main {
+        align-items: center !important;
         justify-content: center !important;
     }
     body.login .main-right {
         padding: 1.5rem 1rem !important;
         align-items: center !important;
+        justify-content: center !important;
     }
     body.login #maincontent,
     body.login > .main .container,
