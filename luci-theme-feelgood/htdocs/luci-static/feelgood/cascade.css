@@ -1924,7 +1924,7 @@ body.login .cbi-value-field {
     box-shadow: none !important;
 }
 
-/* Golden shiny, 100% transparent input boxes (except icons) */
+/* Shiny blueish, 100% transparent input boxes (except icons) */
 html[data-theme-color="dark"] body.login .cbi-input-text,
 html[data-theme-color="dark"] body.login input[type="text"],
 html[data-theme-color="dark"] body.login input[type="password"],
@@ -1946,15 +1946,15 @@ body.login input[type="password"] {
     font-weight: 600 !important;
     letter-spacing: 0.02em !important;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9) !important;
-    border: 2px solid #eab308 !important;
+    border: 2px solid #38bdf8 !important;
     border-radius: 24px !important;
     padding-left: 48px !important;
     padding-right: 48px !important;
     box-sizing: border-box !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
     transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
     margin: 0 !important;
-    caret-color: #facc15 !important;
+    caret-color: #38bdf8 !important;
 }
 
 html[data-theme-color="dark"] body.login .cbi-input-text:focus,
@@ -1966,8 +1966,8 @@ html[data-theme-color="dark"] body.login input[type="password"]:focus,
 body.login .cbi-input-text:focus,
 body.login input[type="text"]:focus,
 body.login input[type="password"]:focus {
-    border-color: #facc15 !important;
-    box-shadow: 0 0 22px rgba(250, 204, 21, 0.8), 0 0 5px #ffd700, inset 0 0 14px rgba(250, 204, 21, 0.3) !important;
+    border-color: #7dd3fc !important;
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.85), 0 0 6px #bae6fd, inset 0 0 14px rgba(56, 189, 248, 0.35) !important;
     outline: none !important;
 }
 
@@ -1978,9 +1978,9 @@ body.login input:-webkit-autofill:focus,
 body.login input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.001) inset !important;
     -webkit-text-fill-color: #ffffff !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
     transition: background-color 50000s ease-in-out 0s !important;
-    caret-color: #facc15 !important;
+    caret-color: #38bdf8 !important;
 }
 
 body.login input::placeholder {
@@ -2029,7 +2029,7 @@ body.login .pwd-eye-icon.active {
     opacity: 1 !important;
 }
 
-/* Golden shiny, 100% transparent Login & Reset action buttons */
+/* Shiny blueish, 100% transparent Login & Reset action buttons */
 html[data-theme-color="dark"] body.login .cbi-page-actions,
 :root body.login .cbi-page-actions,
 body.login .cbi-page-actions {
@@ -2056,22 +2056,22 @@ body.login .cbi-page-actions input.cbi-button-apply {
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
-    border: 2px solid #eab308 !important;
+    border: 2px solid #38bdf8 !important;
     border-radius: 24px 0 0 24px !important;
     cursor: pointer !important;
     box-sizing: border-box !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
     transition: all 0.2s ease !important;
 }
 
 html[data-theme-color="dark"] body.login .cbi-page-actions input.cbi-button-apply:hover,
 :root body.login .cbi-page-actions input.cbi-button-apply:hover,
 body.login .cbi-page-actions input.cbi-button-apply:hover {
-    background: rgba(234, 179, 8, 0.22) !important;
-    background-color: rgba(234, 179, 8, 0.22) !important;
-    border-color: #facc15 !important;
-    color: #ffd700 !important;
-    box-shadow: 0 0 22px rgba(250, 204, 21, 0.8), 0 0 5px #ffd700, inset 0 0 14px rgba(250, 204, 21, 0.3) !important;
+    background: rgba(56, 189, 248, 0.22) !important;
+    background-color: rgba(56, 189, 248, 0.22) !important;
+    border-color: #7dd3fc !important;
+    color: #e0f2fe !important;
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.85), 0 0 6px #bae6fd, inset 0 0 14px rgba(56, 189, 248, 0.35) !important;
 }
 
 html[data-theme-color="dark"] body.login .cbi-page-actions input.cbi-button-reset,
@@ -2087,24 +2087,24 @@ body.login .cbi-page-actions input.cbi-button-reset {
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
-    border: 2px solid #eab308 !important;
-    border-left: 1px solid rgba(234, 179, 8, 0.5) !important;
+    border: 2px solid #38bdf8 !important;
+    border-left: 1px solid rgba(56, 189, 248, 0.5) !important;
     border-radius: 0 24px 24px 0 !important;
     cursor: pointer !important;
     margin-left: 0 !important;
     box-sizing: border-box !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
     transition: all 0.2s ease !important;
 }
 
 html[data-theme-color="dark"] body.login .cbi-page-actions input.cbi-button-reset:hover,
 :root body.login .cbi-page-actions input.cbi-button-reset:hover,
 body.login .cbi-page-actions input.cbi-button-reset:hover {
-    background: rgba(234, 179, 8, 0.22) !important;
-    background-color: rgba(234, 179, 8, 0.22) !important;
-    border-color: #facc15 !important;
-    color: #ffd700 !important;
-    box-shadow: 0 0 22px rgba(250, 204, 21, 0.8), 0 0 5px #ffd700, inset 0 0 14px rgba(250, 204, 21, 0.3) !important;
+    background: rgba(56, 189, 248, 0.22) !important;
+    background-color: rgba(56, 189, 248, 0.22) !important;
+    border-color: #7dd3fc !important;
+    color: #e0f2fe !important;
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.85), 0 0 6px #bae6fd, inset 0 0 14px rgba(56, 189, 248, 0.35) !important;
 }
 
 /* Error/Alert box on login */
@@ -4616,7 +4616,7 @@ body.login .cbi-value:last-child {
     background-color: transparent !important;
 }
 
-/* 100% Transparent + Golden Shiny Input Boxes */
+/* 100% Transparent + Shiny Blueish Input Boxes */
 html[data-theme-color="dark"] body.login input[type="text"],
 html[data-theme-color="dark"] body.login input[type="password"],
 :root body.login input[type="text"],
@@ -4628,22 +4628,22 @@ body.login .cbi-input-text {
     background-color: transparent !important;
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
-    border: 2px solid #eab308 !important;
+    border: 2px solid #38bdf8 !important;
     border-radius: 24px !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
-    caret-color: #facc15 !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
+    caret-color: #38bdf8 !important;
 }
 
-/* 100% Transparent + Golden Shiny Login & Reset Buttons */
+/* 100% Transparent + Shiny Blueish Login & Reset Buttons */
 html[data-theme-color="dark"] body.login .cbi-page-actions input.cbi-button-apply,
 :root body.login .cbi-page-actions input.cbi-button-apply,
 body.login .cbi-page-actions input.cbi-button-apply {
     background: transparent !important;
     background-color: transparent !important;
     color: #ffffff !important;
-    border: 2px solid #eab308 !important;
+    border: 2px solid #38bdf8 !important;
     border-radius: 24px 0 0 24px !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
 }
 
 html[data-theme-color="dark"] body.login .cbi-page-actions input.cbi-button-reset,
@@ -4652,9 +4652,9 @@ body.login .cbi-page-actions input.cbi-button-reset {
     background: transparent !important;
     background-color: transparent !important;
     color: #ffffff !important;
-    border: 2px solid #eab308 !important;
-    border-left: 1px solid rgba(234, 179, 8, 0.5) !important;
+    border: 2px solid #38bdf8 !important;
+    border-left: 1px solid rgba(56, 189, 248, 0.5) !important;
     border-radius: 0 24px 24px 0 !important;
-    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 3px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(234, 179, 8, 0.15) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.45), 0 0 3px rgba(186, 230, 253, 0.85), inset 0 0 8px rgba(56, 189, 248, 0.18) !important;
 }
 
