@@ -95,6 +95,29 @@ Hardware thermal telemetry is automatically retrieved via standard Linux `sysfs`
 
 ---
 
+### 🖥️ CPU Performance, Load & Utilisation
+| Metric / Context | Classification | Dark Theme Styling | Operational Semantics |
+| :--- | :---: | :--- | :--- |
+| **CPU current frequency** < 600 MHz | idle | Slate (#94a3b8) chip | Idle / deep sleep clock |
+| **CPU current frequency** 600–899 MHz | mid | Sky Blue (#38bdf8) chip | Light load |
+| **CPU current frequency** 900–1199 MHz | high | Emerald (#34d399) chip | Sustained load |
+| **CPU current frequency** ≥ 1200 MHz | turbo | Violet (#c084fc) chip | Maximum clock |
+| **CPU min/max frequency** | limit | Muted outline chip, no fill | Policy limit, not a measurement |
+| **Scaling governor** performance | — | Violet (#c084fc), 600 weight | Pinned to max clock |
+| **Scaling governor** ondemand / conservative / schedutil / interactive | — | Cyan (#38bdf8), 600 weight | Dynamic scaling |
+| **Scaling governor** powersave | — | Slate (#94a3b8), 600 weight | Pinned to min clock |
+| **Scaling governor** userspace | — | Amber (#fbbf24), 600 weight | Manual control |
+| **Process %CPU / %MEM** < 10 % | low | Sky Blue (#38bdf8) | Routine process |
+| **Process %CPU / %MEM** 10–49 % | mid | Amber (#fbbf24), 600 weight | Notable consumer |
+| **Process %CPU / %MEM** ≥ 50 % | high | Rose (#f43f5e), 600 weight | Dominant consumer |
+| **Load average** (1 min) < 1.5 | low | Emerald (#34d399) | Idle box (4-core msm8916) |
+| **Load average** (1 min) 1.5–3.99 | mid | Amber (#fbbf24) | Working set, still headroom |
+| **Load average** (1 min) ≥ 4.0 | high | Rose (#f43f5e) | All four cores saturated |
+
+GHz is only treated as a CPU clock when the cell is a frequency cell (data-title mentioning "frequency", or an id ending in Freq); otherwise a GHz value is a Wi-Fi channel and is coloured by band.
+
+---
+
 ### 🌐 Network Identifiers & Operational Status
 | Type / Pattern | Badge Class | Dark Theme Styling | Semantics |
 | :--- | :---: | :--- | :--- |
@@ -138,6 +161,14 @@ To ensure a balanced layout across all LuCI views, the theme enforces a unified 
 * **Top Header Controls**: Navigation toggle (`[ ⬌ Horizontal ]`), theme toggle (`[ 🌙 Dark ]`), and logout button are aligned inside `.btn-con` with uniform `32px` height, `16px` pill radius, and `8px` spacing.
 * **Table Rows & Cells**: Table cells across status and configuration pages feature uniform `0.65rem 0.85rem` padding with centered vertical alignment (`vertical-align: middle;`).
 * **CBI Tabs & Navigation**: `.cbi-tabmenu` and `.tabs` use a flex tab bar with active accent indicators (`border-bottom: 2px solid var(--accent-color)`).
+
+---
+
+### D. Interface Icons & Status Rows (Network → Interfaces)
+* **Uniform icon box**: LuCI's icons ship at different intrinsic sizes (\`wifi.svg\` declares only a viewBox and would render at the SVG default), so the theme pins every badge icon to 32×32 and every interface-box icon to 24×24 — the same normalisation LuCI's own stylesheet applies.
+* **Icon + name on one line**: \`.ifacebox-body\` is a flex row, so every interface card in a row has the same height and the icon is centred against its label.
+* **Status list as a two-column grid**: labels right-aligned in an 88 px column, values left-aligned, so RX / TX / Carrier / Protocol line up across every interface instead of each row starting at a different x.
+* **Role colours**: RX green, TX violet (both with a direction arrow), packet counters in quiet monospace, Carrier Present/Absent green/rose, and Protocol by role — DHCP cyan, Static blue, Cellular amber, Tunnel/VPN violet, Unmanaged/none rose.
 
 ---
 

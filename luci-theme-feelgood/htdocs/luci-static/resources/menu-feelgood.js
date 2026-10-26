@@ -602,8 +602,16 @@ const Colorizer = {
 		// 2. Role-tag the interface status rows (Network -> Interfaces)
 		this.colorizeIfaceRows();
 
-		// 3. Process general table cells, field values, and key-value entries
-		const cells = document.querySelectorAll('#maincontent td, #maincontent .td, #maincontent .cbi-value-field, #maincontent .ifacebox-body .nowrap');
+		// 3. Colour the CPU scaling governors (Services -> CPU Performance)
+		this.colorizeGovernors();
+
+		// 4. Utilisation cells (Status -> Processes) and the load average
+		this.colorizeUsageCells();
+		this.colorizeLoadAverage();
+		this.colorizeLabelValueRows();
+
+		// 5. Process general table cells, field values, and key-value entries
+		const cells = document.querySelectorAll('#maincontent td, #maincontent .td, #maincontent .cbi-value-field, #maincontent .ifacebox-body .nowrap, #maincontent .cpu-perf-label-value');
 		for (let i = 0; i < cells.length; i++) {
 			const cell = cells[i];
 
@@ -666,6 +674,135 @@ const Colorizer = {
 			else if ((role === 'rx' || role === 'tx') && !row.querySelector('.badge-traffic')) {
 				this.wrapTrafficCounter(row, labelEl, role);
 			}
+		}
+	},
+
+	/**
+	 * Status -> Processes: colour the "%CPU" / "%MEM" cells by utilisation.
+	 * L.ui.Table copies the column title into data-title, so the two columns
+	 * are distinguishable without touching the view.
+	 */
+	colorizeUsageCells() {
+		const cells = document.querySelectorAll('#maincontent .td[data-title*="usage"], #maincontent td[data-title*="usage"]');
+
+		for (let i = 0; i < cells.length; i++) {
+			const cell = cells[i];
+			const v = parseFloat((cell.textContent || '').trim());
+
+			if (isNaN(v) || v <= 0)
+				continue;
+
+			const level = (v >= 50) ? 'high' : (v >= 10 ? 'mid' : 'low');
+
+			if (cell.getAttribute('data-usage') !== level)
+				cell.setAttribute('data-usage', level);
+		}
+	},
+
+	/**
+	 * Status -> Overview: colour the load average by how loaded the box is.
+	 * msm8916 is a fixed 4-core part, so 4.00 is the saturation point.
+	 */
+	colorizeLoadAverage() {
+		const tag = (cell) => {
+			const m = (cell.textContent || '').match(/([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/);
+
+			if (!m)
+				return;
+
+			const load = parseFloat(m[1]);
+			const level = (load >= 4) ? 'high' : (load >= 1.5 ? 'mid' : 'low');
+
+			if (cell.getAttribute('data-load') !== level)
+				cell.setAttribute('data-load', level);
+		};
+
+		// <span class="nowrap"><strong>Load Average: </strong>0.42, 0.31, 0.20</span>
+		const rows = document.querySelectorAll('#maincontent .nowrap');
+
+		for (let i = 0; i < rows.length; i++) {
+			const labelEl = rows[i].firstElementChild;
+
+			if (labelEl && labelEl.tagName === 'STRONG' &&
+			    /^load average$/i.test(labelEl.textContent.replace(/:\s*$/, '').trim()))
+				tag(rows[i]);
+		}
+
+		// <tr class="tr"><td>Load Average</td><td>0.42, 0.31, 0.20</td></tr>
+		// (Status -> Overview renders the System block as a label/value table.)
+		const trs = document.querySelectorAll('#maincontent tr.tr');
+
+		for (let i = 0; i < trs.length; i++) {
+			const cells = trs[i].children;
+
+			if (cells.length >= 2 && cells[0].tagName === 'TD' &&
+			    /^load average$/i.test((cells[0].textContent || '').trim())) {
+				cells[0].setAttribute('data-label', '1');
+				tag(cells[1]);
+			}
+		}
+	},
+
+	/**
+	 * Status -> Overview renders System / Connections as label+value tables,
+	 * so there is no <strong> to key off.  Tag the value cell by its label.
+	 */
+	colorizeLabelValueRows() {
+		const META = {
+			'hostname':         'host',
+			'model':            'muted',
+			'architecture':     'code',
+			'target platform':  'code',
+			'firmware version': 'version',
+			'kernel version':   'version',
+			'local time':       'muted'
+		};
+
+		const rows = document.querySelectorAll('#maincontent tr.tr');
+
+		for (let i = 0; i < rows.length; i++) {
+			const cells = rows[i].children;
+
+			if (cells.length < 2 || cells[0].tagName !== 'TD')
+				continue;
+
+			const role = META[(cells[0].textContent || '').trim().toLowerCase()];
+
+			if (!role)
+				continue;
+
+			if (cells[1].getAttribute('data-meta') !== role)
+				cells[1].setAttribute('data-meta', role);
+		}
+	},
+
+	/**
+	 * Services -> CPU Performance: colour the scaling governor by what it does.
+	 * The cells carry ids like "cpu0governor"; the value is the governor name.
+	 */
+	colorizeGovernors() {
+		const cells = document.querySelectorAll('#maincontent [id$="governor"]');
+
+		for (let i = 0; i < cells.length; i++) {
+			const cell = cells[i];
+			const gov = (cell.textContent || '').trim().toLowerCase();
+
+			if (!gov || gov === '-')
+				continue;
+
+			let kind = 'other';
+
+			if (/performance/.test(gov))
+				kind = 'performance';
+			else if (/powersave/.test(gov))
+				kind = 'powersave';
+			else if (/ondemand|conservative|schedutil|interactive/.test(gov))
+				kind = 'adaptive';
+			else if (/userspace/.test(gov))
+				kind = 'manual';
+
+			if (cell.getAttribute('data-governor') !== kind)
+				cell.setAttribute('data-governor', kind);
 		}
 	},
 
@@ -809,8 +946,14 @@ const Colorizer = {
 		const labelText = cell.closest ? (cell.closest('.cbi-value')?.querySelector('.cbi-value-title')?.textContent || '') : '';
 		const cellId = cell.id || '';
 
+		const dataTitle = (cell.getAttribute && cell.getAttribute('data-title')) || '';
+
 		const context = {
 			rawText: rawText,
+			// CPU frequency cells (Services -> CPU Performance) carry ids like
+			// cpu0curFreq and a data-title of "Current/Minimum/Maximum frequency".
+			isFreq: /freq|frequency/i.test(cellId) || /freq|frequency/i.test(dataTitle) || /frequency/i.test(labelText),
+			isFreqLimit: /(?:min|max|minimum|maximum)/i.test(dataTitle) || /minFreq|maxFreq/i.test(cellId),
 			isNoise: /Noise/i.test(rawText) || /Noise/i.test(prevText) || /Noise/i.test(labelText) || /noise/i.test(cellId),
 			isTxPower: /(?:TX[\s-]*Power|txpower|Current\s*power)/i.test(rawText) ||
 			           /(?:TX[\s-]*Power|txpower)/i.test(prevText) ||
@@ -858,6 +1001,29 @@ const Colorizer = {
 	transformText(text, context) {
 		let modified = false;
 		let result = text;
+
+		// 0. CPU frequency (e.g. "998.4 MHz", "1.2 GHz", "200 MHz").
+		//    MHz is never a WiFi channel, so it is unambiguous; GHz is only
+		//    treated as a CPU clock when the cell says it is a frequency,
+		//    otherwise rule 4 would paint it as a 2.4 GHz band.
+		let cpuFreqDone = false;
+
+		if (context.isFreq || /\bMHz\b/i.test(result)) {
+			result = result.replace(/(\d+(?:\.\d+)?)\s*(MHz|GHz)/gi, (match, numStr, unit) => {
+				const mhz = parseFloat(numStr) * (unit.toLowerCase() === 'ghz' ? 1000 : 1);
+				let level;
+
+				if (context.isFreqLimit)     level = 'limit';
+				else if (mhz >= 1200)        level = 'turbo';
+				else if (mhz >= 900)         level = 'high';
+				else if (mhz >= 600)         level = 'mid';
+				else                         level = 'idle';
+
+				return '<span class="badge-colored badge-cpu-freq" data-mhz="' + level + '">' + match + '</span>';
+			});
+			modified = true;
+			cpuFreqDone = true;
+		}
 
 		// 1. RF Metrics: TX Power, Noise Floor, and WiFi Signal (dBm)
 		if (/-?\d+(?:\.\d+)?\s*dBm/i.test(result)) {
@@ -932,6 +1098,15 @@ const Colorizer = {
 			modified = true;
 		}
 
+		// 2b. Version strings (e.g. "25.12.6", "6.12.112").  Skipped when the
+		//     text is an address, otherwise "192.168.1.1" would match.
+		if (/\b\d+\.\d+\.\d+\b/.test(result) &&
+		    !/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/.test(result)) {
+			result = result.replace(/\b\d+\.\d+\.\d+\b/g, match =>
+				'<span class="badge-version">' + match + '</span>');
+			modified = true;
+		}
+
 		// 3. Traffic direction indicators (▲ TX and ▼ RX)
 		if (result.includes('▲') || result.includes('▼')) {
 			result = result
@@ -941,7 +1116,7 @@ const Colorizer = {
 		}
 
 		// 4. WiFi Frequency Bands (e.g. "5.180 GHz" or "2.437 GHz" or "6 GHz")
-		if (/\b\d+(?:\.\d+)?\s*GHz\b/i.test(result)) {
+		if (!cpuFreqDone && /\b\d+(?:\.\d+)?\s*GHz\b/i.test(result)) {
 			result = result.replace(/(\d+(?:\.\d+)?)\s*GHz/gi, (match, freqStr) => {
 				const freq = parseFloat(freqStr);
 				let band = '2g';
@@ -971,6 +1146,10 @@ const Colorizer = {
 		// 6. Uptime stability tag
 		if (/^\s*\d+d\s+\d+h/i.test(result)) {
 			result = `<span class="badge-colored badge-uptime" data-uptime="stable">${result}</span>`;
+			modified = true;
+		} else if (/^\s*\d+h\s+\d+m/i.test(result) && result.length < 24) {
+			// A countdown such as a DHCP lease "11h 58m 12s" - not an uptime.
+			result = `<span class="badge-colored badge-duration">${result}</span>`;
 			modified = true;
 		} else if (/^\s*(?:[0-5]?[0-9]m|[0-5]?[0-9]s)/i.test(result) && !/\d+h|\d+d/i.test(result) && result.length < 15) {
 			result = `<span class="badge-colored badge-uptime" data-uptime="recent">${result}</span>`;
