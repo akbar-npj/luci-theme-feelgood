@@ -444,6 +444,46 @@ const LogViewer = {
  * - System resource usage levels (Memory, Storage, CPU)
  * - Port statuses
  */
+/**
+ * Network -> Interfaces: the label of each status row decides its role.
+ * ui.itemlist() renders every entry as "<strong>Label: </strong>value".
+ */
+const IFACE_ROLES = {
+	'protocol':    'protocol',
+	'device':      'device',
+	'carrier':     'carrier',
+	'uptime':      'uptime',
+	'mac':         'mac',
+	'rx':          'rx',
+	'tx':          'tx',
+	'ipv4':        'ip',
+	'ipv6':        'ip',
+	'ipv6-pd':     'ip',
+	'error':       'error',
+	'information': 'info'
+};
+
+/**
+ * Classify a protocol name by the role it plays, so the value can be coloured
+ * consistently across boards and LuCI versions.
+ */
+function ifaceProtocolKind(value) {
+	const s = String(value || '').toLowerCase();
+
+	if (/qmi|mbim|cellular|modemmanager|3gpp|\b(3g|4g|5g|lte|umts|ncm)\b/.test(s))
+		return 'cellular';
+	if (/pppoe|\bppp\b|pptp|l2tp|wireguard|openvpn|\bvpn\b|\bgre\b|6in4|6to4|ds-lite|\bmap\b|vxlan|tunnel/.test(s))
+		return 'tunnel';
+	if (/dhcp/.test(s))
+		return 'dynamic';
+	if (/static/.test(s))
+		return 'static';
+	if (/unmanaged|\bnone\b|disabled/.test(s))
+		return 'none';
+
+	return 'other';
+}
+
 const Colorizer = {
 	isBusy: false,
 	rafId: null,
@@ -559,7 +599,10 @@ const Colorizer = {
 		// 1. Process specialized Port Status boxes first (overview page)
 		this.processPortBoxes();
 
-		// 2. Process general table cells, field values, and key-value entries
+		// 2. Role-tag the interface status rows (Network -> Interfaces)
+		this.colorizeIfaceRows();
+
+		// 3. Process general table cells, field values, and key-value entries
 		const cells = document.querySelectorAll('#maincontent td, #maincontent .td, #maincontent .cbi-value-field, #maincontent .ifacebox-body .nowrap');
 		for (let i = 0; i < cells.length; i++) {
 			const cell = cells[i];
@@ -574,6 +617,83 @@ const Colorizer = {
 
 			this.processCell(cell);
 		}
+	},
+
+	/**
+	 * Network -> Interfaces: colour-code the status list by role.
+	 *
+	 * Tags the row with data-role (and data-state / data-kind where the meaning
+	 * depends on the value) so cascade.css can colour the label and the value.
+	 * Every write is guarded - an unconditional setAttribute() would retrigger
+	 * the MutationObserver forever.
+	 */
+	colorizeIfaceRows() {
+		const rows = document.querySelectorAll('#maincontent .nowrap');
+
+		for (let i = 0; i < rows.length; i++) {
+			const row = rows[i];
+			const labelEl = row.firstElementChild;
+
+			if (!labelEl || labelEl.tagName !== 'STRONG')
+				continue;
+
+			const label = labelEl.textContent.replace(/:\s*$/, '').trim().toLowerCase();
+			const role = IFACE_ROLES[label];
+
+			if (!role)
+				continue;
+
+			if (row.getAttribute('data-role') !== role)
+				row.setAttribute('data-role', role);
+
+			const value = (row.textContent || '').slice(labelEl.textContent.length).trim();
+
+			if (!value)
+				continue;
+
+			if (role === 'carrier') {
+				const state = /^absent/i.test(value) ? 'bad' : 'ok';
+
+				if (row.getAttribute('data-state') !== state)
+					row.setAttribute('data-state', state);
+			}
+			else if (role === 'protocol') {
+				const kind = ifaceProtocolKind(value);
+
+				if (row.getAttribute('data-kind') !== kind)
+					row.setAttribute('data-kind', kind);
+			}
+			else if ((role === 'rx' || role === 'tx') && !row.querySelector('.badge-traffic')) {
+				this.wrapTrafficCounter(row, labelEl, role);
+			}
+		}
+	},
+
+	/**
+	 * Turn "1.23 GB (456 Pkts.)" into a direction badge plus a quiet packet
+	 * count, so the bytes read as the headline and the packets as the detail.
+	 */
+	wrapTrafficCounter(row, labelEl, role) {
+		const node = labelEl.nextSibling;
+
+		if (!node || node.nodeType !== 3)
+			return;
+
+		const text = node.nodeValue;
+		const m = text.match(/^\s*(.+?)\s*\(([^)]*)\)\s*$/);
+		const arrow = (role === 'rx') ? '▼' : '▲';
+		let html;
+
+		if (m)
+			html = '<span class="badge-colored badge-traffic badge-' + role + '">' +
+				'<span class="traffic-icon">' + arrow + '</span> ' + m[1] + '</span> ' +
+				'<span class="iface-pkts">(' + m[2] + ')</span>';
+		else
+			html = '<span class="badge-colored badge-traffic badge-' + role + '">' +
+				'<span class="traffic-icon">' + arrow + '</span> ' + text.trim() + '</span>';
+
+		node.parentNode.replaceChild(
+			document.createRange().createContextualFragment(html), node);
 	},
 
 	/**
