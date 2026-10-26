@@ -1806,19 +1806,20 @@ body.login .logoImg .brand {
     letter-spacing: 0.02em !important;
 }
 
-/* Transparent glass login card - background wallpaper is clearly viewable */
+/* 100% Transparent login card - card background completely invisible, wallpaper unobstructed */
 body.login > .main .container,
 body.login .container {
-    background: rgba(15, 23, 42, 0.28) !important;
-    backdrop-filter: blur(3px) !important;
-    -webkit-backdrop-filter: blur(3px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    border-radius: 24px !important;
-    padding: 2.5rem 2.75rem !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 1rem !important;
+    box-shadow: none !important;
     width: 100% !important;
-    max-width: 480px !important;
-    min-width: 320px !important;
+    max-width: 420px !important;
+    min-width: 300px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
     text-align: left !important;
@@ -1827,8 +1828,9 @@ body.login .container {
 @media screen and (max-width: 540px) {
     body.login > .main .container,
     body.login .container {
-        padding: 1.75rem 1.5rem !important;
-        border-radius: 20px !important;
+        padding: 0 0.5rem !important;
+        border: none !important;
+        box-shadow: none !important;
         max-width: 92% !important;
     }
 }
@@ -1845,7 +1847,7 @@ body.login h2 {
     margin: 0 0 0.4rem !important;
     padding: 0 !important;
     text-align: left !important;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95) !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.95) !important;
 }
 
 body.login .main-right .cbi-map-descr,
@@ -1857,7 +1859,7 @@ body.login .cbi-map-descr {
     margin-bottom: 1.5rem !important;
     padding: 0 !important;
     text-align: left !important;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.95) !important;
 }
 
 /* Container & form structure transparency inside card */
@@ -2003,45 +2005,48 @@ body.login .cbi-page-actions {
     padding: 0 !important;
     border: none !important;
     background: transparent !important;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35)) !important;
 }
 
 body.login .cbi-page-actions input.cbi-button-apply {
     flex: 1 1 60% !important;
     width: 60% !important;
-    height: 46px !important;
+    height: 48px !important;
     background: #0284c7 !important;
     color: #ffffff !important;
     font-size: 1rem !important;
     font-weight: 700 !important;
-    border: none !important;
-    border-radius: 23px 0 0 23px !important;
+    border: 1.5px solid #0284c7 !important;
+    border-radius: 24px 0 0 24px !important;
     cursor: pointer !important;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
-    transition: background 0.15s ease, transform 0.1s ease !important;
+    box-sizing: border-box !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
 }
 
 body.login .cbi-page-actions input.cbi-button-apply:hover {
     background: #0369a1 !important;
+    border-color: #0369a1 !important;
 }
 
 body.login .cbi-page-actions input.cbi-button-reset {
     flex: 1 1 40% !important;
     width: 40% !important;
-    height: 46px !important;
-    background: rgba(255, 255, 255, 0.88) !important;
+    height: 48px !important;
+    background: #ffffff !important;
     color: #0f172a !important;
     font-size: 0.95rem !important;
     font-weight: 700 !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+    border: 1.5px solid #cbd5e1 !important;
     border-left: none !important;
-    border-radius: 0 23px 23px 0 !important;
+    border-radius: 0 24px 24px 0 !important;
     cursor: pointer !important;
     margin-left: 0 !important;
+    box-sizing: border-box !important;
     transition: background 0.15s ease, color 0.15s ease !important;
 }
 
 body.login .cbi-page-actions input.cbi-button-reset:hover {
-    background: #ffffff !important;
+    background: #f1f5f9 !important;
     color: #0f172a !important;
 }
 
