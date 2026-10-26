@@ -75,7 +75,7 @@
 		<div class="main-left" id="mainLeft">
 			<div class="nav-container">
 				<a class="brand" href="{{ dispatcher.build_url() }}">
-					<img class="brand-logo" src="{{ media }}/logo.png" alt="Feelgood">
+					<img class="brand-logo" src="{{ media }}/LoginIcon.png" alt="Feelgood">
 					<span class="brand-name">{{ striptags(boardinfo.hostname ?? '?') }}</span>
 				</a>
 				<div class="navbar-container" id="navBox">
@@ -88,7 +88,7 @@
 					<div class="header-left">
 						<span class="showSide"></span>
 						<a class="brand" href="{{ dispatcher.build_url() }}">
-							<img class="brand-logo" src="{{ media }}/logo.png" alt="Feelgood">
+							<img class="brand-logo" src="{{ media }}/LoginIcon.png" alt="Feelgood">
 							<span class="brand-name">{{ striptags(boardinfo.hostname ?? '?') }}</span>
 						</a>
 						<div class="top-nav-box" id="topNavBox"></div>
