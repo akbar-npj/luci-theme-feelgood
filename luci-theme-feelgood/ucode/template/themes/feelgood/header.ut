@@ -108,8 +108,7 @@
 			<div class="darkMask"></div>
 			<div id="maincontent">
 				<div class="logoImg">
-					<img class="mobile-hide" src="{{ media }}/logo.png" alt="Feelgood">
-					<img src="{{ media }}/mobile-loginBG.png" class="PC-hide">
+					<img class="brand-logo login-icon" src="{{ media }}/LoginIcon.png" alt="Feelgood">
 					<a class="brand" href="#">{{ striptags(boardinfo.hostname ?? '?') }}</a>
 				</div>
 				<div class="container">

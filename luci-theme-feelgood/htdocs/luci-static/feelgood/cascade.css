@@ -1780,10 +1780,20 @@ body.login .logoImg {
 }
 
 body.login .logoImg img.brand-logo,
-body.login .logoImg img.mobile-hide {
-    max-height: 54px !important;
-    width: auto !important;
-    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6)) !important;
+body.login .logoImg img.mobile-hide,
+body.login .logoImg img.login-icon,
+body.login .logoImg img {
+    max-height: 72px !important;
+    width: 72px !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.75)) !important;
+    transition: transform 0.2s ease !important;
+    object-fit: cover !important;
+}
+
+body.login .logoImg img:hover {
+    transform: scale(1.05) !important;
 }
 
 body.login .logoImg .brand {
