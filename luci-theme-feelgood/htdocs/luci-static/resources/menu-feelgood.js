@@ -464,6 +464,28 @@ const IFACE_ROLES = {
 };
 
 /**
+ * Status -> Processes / DHCP Leases / Routes: table cells carry the column
+ * title in data-title (L.ui.Table copies it), so a cell can be coloured by
+ * what its column means.  Only the columns that would otherwise read as plain
+ * white are listed here - addresses, MACs and durations are already badged by
+ * transformText().
+ */
+const COLUMN_META = {
+	'hostname':  'host',
+	'pid':       'id',
+	'owner':     'id',
+	'duid':      'id',
+	'iaid':      'id',
+	'metric':    'id',
+	'table':     'id',
+	'priority':  'id',
+	'rule':      'id',
+	'command':   'code',
+	'device':    'code',
+	'interface': 'code'
+};
+
+/**
  * Classify a protocol name by the role it plays, so the value can be coloured
  * consistently across boards and LuCI versions.
  */
@@ -609,6 +631,7 @@ const Colorizer = {
 		this.colorizeUsageCells();
 		this.colorizeLoadAverage();
 		this.colorizeLabelValueRows();
+		this.colorizeTableColumns();
 
 		// 5. Process general table cells, field values, and key-value entries
 		const cells = document.querySelectorAll('#maincontent td, #maincontent .td, #maincontent .cbi-value-field, #maincontent .ifacebox-body .nowrap, #maincontent .cpu-perf-label-value');
@@ -692,7 +715,14 @@ const Colorizer = {
 			if (isNaN(v) || v <= 0)
 				continue;
 
-			const level = (v >= 50) ? 'high' : (v >= 10 ? 'mid' : 'low');
+			// %CPU is per process and can exceed 100 on a 4-core box, so a single
+			// busy process is only worth an amber warning.  %MEM is a share of the
+			// whole 512 MB, where 10 % is already a large resident set.
+			const isMem = /mem/i.test(cell.getAttribute('data-title') || '');
+			const mid = isMem ? 10 : 40;
+			const high = isMem ? 30 : 80;
+
+			const level = (v >= high) ? 'high' : (v >= mid ? 'mid' : 'low');
 
 			if (cell.getAttribute('data-usage') !== level)
 				cell.setAttribute('data-usage', level);
@@ -771,8 +801,46 @@ const Colorizer = {
 			if (!role)
 				continue;
 
+			cells[0].setAttribute('data-label', '1');
+
 			if (cells[1].getAttribute('data-meta') !== role)
 				cells[1].setAttribute('data-meta', role);
+		}
+	},
+
+	/**
+	 * Status -> Processes / DHCP Leases / Routes: colour the columns that carry
+	 * an identifier instead of prose, so the eye can skip them and land on the
+	 * values that matter.
+	 */
+	colorizeTableColumns() {
+		const cells = document.querySelectorAll('#maincontent [data-title]');
+
+		for (let i = 0; i < cells.length; i++) {
+			const cell = cells[i];
+
+			// %CPU / %MEM and the load average have their own passes.
+			if (cell.hasAttribute('data-usage') || cell.hasAttribute('data-load'))
+				continue;
+
+			const title = (cell.getAttribute('data-title') || '').trim().toLowerCase();
+
+			if (!title)
+				continue;
+
+			if (title === 'protocol') {
+				const kind = ifaceProtocolKind(cell.textContent);
+
+				if (cell.getAttribute('data-proto-kind') !== kind)
+					cell.setAttribute('data-proto-kind', kind);
+
+				continue;
+			}
+
+			const role = COLUMN_META[title];
+
+			if (role && cell.getAttribute('data-meta') !== role)
+				cell.setAttribute('data-meta', role);
 		}
 	},
 
@@ -1379,6 +1447,15 @@ return baseclass.extend({
 								loading.style.opacity = '1';
 								loading.style.visibility = 'visible';
 							}
+							var dl = document.querySelector('.main-left');
+							if (dl && (dl.classList.contains('open') || dl.style.width === '100%')) {
+								var dm = document.querySelector('.darkMask');
+								if (dm) dm.style.display = 'none';
+								dl.style.width = '';
+								dl.classList.remove('open');
+								var mr = document.querySelector('.main-right');
+								if (mr) mr.style.overflowY = '';
+							}
 						}
 					}, [ _(child.title) ])
 				]);
@@ -1478,6 +1555,15 @@ return baseclass.extend({
 							if (loading) {
 								loading.style.opacity = '1';
 								loading.style.visibility = 'visible';
+							}
+							var dl = document.querySelector('.main-left');
+							if (dl && (dl.classList.contains('open') || dl.style.width === '100%')) {
+								var dm = document.querySelector('.darkMask');
+								if (dm) dm.style.display = 'none';
+								dl.style.width = '';
+								dl.classList.remove('open');
+								var mr = document.querySelector('.main-right');
+								if (mr) mr.style.overflowY = '';
 							}
 						}
 					}, [
@@ -1601,6 +1687,24 @@ return baseclass.extend({
 		if (this.oScroll)
 			this.oScroll.setSize(200);
 
+		// On mobile the menu is an overlay drawer. Tapping a category there must
+		// dismiss the drawer (and jump to its first sub-page) so the content
+		// behind becomes reachable and scrollable again; otherwise the page
+		// stays locked behind the dark mask.
+		var drawerLeft = document.querySelector('.main-left');
+		var drawerOpen = drawerLeft && (drawerLeft.classList.contains('open') || drawerLeft.style.width === '100%');
+		if (drawerOpen) {
+			var firstChild = slideMenu.querySelector('a');
+			if (firstChild && firstChild.getAttribute('href') && firstChild.getAttribute('href') !== '#') {
+				this._closeDrawer();
+				ev.preventDefault();
+				ev.stopPropagation();
+				window.location = firstChild.getAttribute('href');
+				return;
+			}
+			this._closeDrawer();
+		}
+
 		ev.preventDefault();
 		ev.stopPropagation();
 	},
@@ -1617,7 +1721,7 @@ return baseclass.extend({
 			if (darkMask) darkMask.style.display = 'none';
 			mainLeft.style.width = '0';
 			mainLeft.classList.remove('open');
-			if (mainRight) mainRight.style.overflowY = 'auto';
+			if (mainRight) mainRight.style.overflowY = '';
 		} else {
 			if (darkMask) darkMask.style.display = 'block';
 			mainLeft.style.width = '100%';
@@ -1629,17 +1733,21 @@ return baseclass.extend({
 		ev.stopPropagation();
 	},
 
-	handleResize(ev) {
+	_closeDrawer() {
 		var mainLeft = document.querySelector('.main-left');
 		var darkMask = document.querySelector('.darkMask');
+		var mainRight = document.querySelector('.main-right');
+		if (mainLeft) {
+			mainLeft.style.width = '';
+			mainLeft.classList.remove('open');
+		}
+		if (darkMask) darkMask.style.display = 'none';
+		if (mainRight) mainRight.style.overflowY = '';
+	},
+
+	handleResize(ev) {
 		if (window.innerWidth > 992) {
-			if (mainLeft) {
-				mainLeft.style.width = '';
-				mainLeft.classList.remove('open');
-			}
-			if (darkMask) {
-				darkMask.style.display = 'none';
-			}
+			this._closeDrawer();
 		}
 	},
 

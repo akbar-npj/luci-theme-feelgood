@@ -2873,6 +2873,34 @@ body.lang_pl.login .cbi-value-title {
         width: 80%;
     }
 
+    /* Memory / Storage / Active Connections: at this width the table splits
+     * 50/50 no matter what the 33% attribute says, which leaves ~160px for a
+     * "120.90 MiB / 224.12 MiB (53%)" caption - it gets ellipsised.  Stack the
+     * label above the bar so the bar gets the whole row width.
+     * ":root" is needed on the bar rules - the base ones are declared later. */
+    #maincontent .table tr.tr:has(.cbi-progressbar) {
+        display: block;
+    }
+
+    #maincontent .table tr.tr:has(.cbi-progressbar) > td {
+        display: block;
+        width: auto !important;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #maincontent .table tr.tr:has(.cbi-progressbar) > td:first-child {
+        padding-bottom: 0.15rem;
+    }
+
+    :root .cbi-progressbar {
+        min-width: 0;
+    }
+
+    :root .cbi-progressbar::after {
+        font-size: 0.66rem;
+    }
+
     fieldset {
         padding: 1rem;
         margin: 1rem 0 0 0;
@@ -3925,8 +3953,34 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
 
 /* --- RESPONSIVE MOBILE VIEW --- */
 @media screen and (max-width: 992px) {
-    .top-nav-box {
+    /* Must out-specify ":root .top-nav-box" and
+     * "html[data-theme-nav=horizontal] .top-nav-box" (both !important), or the
+     * horizontal menu stays in the header and pushes the buttons off-screen. */
+    :root .top-nav-box,
+    html[data-theme-nav] .top-nav-box {
         display: none !important;
+    }
+
+    /* Horizontal/vertical is meaningless while the nav is a drawer, and the
+     * button is wide enough to push "Log out" past the right edge. */
+    #nav_layout_btn {
+        display: none !important;
+    }
+
+    /* The hostname must truncate instead of wrapping to a second line, and it
+     * must be allowed to shrink below its content width. */
+    .header-left {
+        min-width: 0;
+    }
+
+    .header-left .brand-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-con {
+        flex-shrink: 0;
     }
 
     .header-left .brand {
@@ -3948,7 +4002,10 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
         display: inline-block;
     }
 
-    .logged-in .main-left {
+    /* The vertical-nav rule below is 0,3,1 and would otherwise keep the
+     * sidebar at 240px on a phone, on top of the content. */
+    .logged-in .main-left,
+    html[data-theme-nav="vertical"] .logged-in .main-left {
         display: block !important;
         position: fixed !important;
         width: 0 !important;
@@ -3964,7 +4021,8 @@ html[data-theme-nav="vertical"] .logged-in .main-right {
         transition: width 0.25s ease;
     }
 
-    .logged-in .main-left.active {
+    .logged-in .main-left.active,
+    html[data-theme-nav="vertical"] .logged-in .main-left.active {
         width: 100% !important;
     }
 
