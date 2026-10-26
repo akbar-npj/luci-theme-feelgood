@@ -1940,7 +1940,6 @@ body.login input[type="password"] {
     width: 100% !important;
     height: 48px !important;
     line-height: 48px !important;
-    background: transparent !important;
     background-color: transparent !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
@@ -1994,7 +1993,11 @@ body.login input::placeholder {
     text-shadow: none !important;
 }
 
-/* User & Password Icons (Black) */
+/* User & Password Key Icons (Solid Opaque Black) */
+html[data-theme-color="dark"] body.login input[name="luci_username"],
+html[data-theme-color="dark"] body.login .cbi-value:first-child input[type="text"],
+:root body.login input[name="luci_username"],
+:root body.login .cbi-value:first-child input[type="text"],
 body.login input[name="luci_username"],
 body.login .cbi-value:first-child input[type="text"] {
     background-image: url(./user.png) !important;
@@ -2003,9 +2006,13 @@ body.login .cbi-value:first-child input[type="text"] {
     background-size: 20px 20px !important;
 }
 
+html[data-theme-color="dark"] body.login input[name="luci_password"],
+html[data-theme-color="dark"] body.login input[type="password"],
+:root body.login input[name="luci_password"],
+:root body.login input[type="password"],
 body.login input[name="luci_password"],
 body.login input[type="password"] {
-    background-image: url(./pwd.png) !important;
+    background-image: url(./key.png) !important;
     background-repeat: no-repeat !important;
     background-position: 16px center !important;
     background-size: 20px 20px !important;
@@ -4628,7 +4635,6 @@ html[data-theme-color="dark"] body.login input[type="password"],
 body.login input[type="text"],
 body.login input[type="password"],
 body.login .cbi-input-text {
-    background: transparent !important;
     background-color: transparent !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
@@ -4638,6 +4644,31 @@ body.login .cbi-input-text {
     border-radius: 24px !important;
     box-shadow: 0 0 14px rgba(153, 27, 27, 0.5), 0 0 3px rgba(220, 38, 38, 0.75), inset 0 0 8px rgba(153, 27, 27, 0.2) !important;
     caret-color: #000000 !important;
+}
+
+/* User & Password Key Icons (Solid Opaque Black) */
+html[data-theme-color="dark"] body.login input[name="luci_username"],
+html[data-theme-color="dark"] body.login .cbi-value:first-child input[type="text"],
+:root body.login input[name="luci_username"],
+:root body.login .cbi-value:first-child input[type="text"],
+body.login input[name="luci_username"],
+body.login .cbi-value:first-child input[type="text"] {
+    background-image: url(./user.png) !important;
+    background-repeat: no-repeat !important;
+    background-position: 16px center !important;
+    background-size: 20px 20px !important;
+}
+
+html[data-theme-color="dark"] body.login input[name="luci_password"],
+html[data-theme-color="dark"] body.login input[type="password"],
+:root body.login input[name="luci_password"],
+:root body.login input[type="password"],
+body.login input[name="luci_password"],
+body.login input[type="password"] {
+    background-image: url(./key.png) !important;
+    background-repeat: no-repeat !important;
+    background-position: 16px center !important;
+    background-size: 20px 20px !important;
 }
 
 /* 100% Transparent + Dark Red Buttons + Thick Black Font */
